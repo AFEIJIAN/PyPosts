@@ -7,7 +7,7 @@
 from sys import exc_info
 import mysql.connector as sql
 
-def pre(server_obj, auth_key, req_type):
+def pre(server_obj, auth_key):
     try:
         conn = sql.connect(
             host=server_obj.mysql_host,
@@ -19,8 +19,8 @@ def pre(server_obj, auth_key, req_type):
 
     except Exception:
         print("Error occured while trying to connect to MySQL Server: \n{}".exc_info())
-        # return user,req_type
-        return None,None
+        # return user
+        return None
 
     cursor = conn.cursor()
     cursor.execute('SELECT auth_key,username FROM users WHERE auth_key="{}"'.format(auth_key))
@@ -30,15 +30,18 @@ def pre(server_obj, auth_key, req_type):
 
     # catch unread result error
     except sql.errors.InternalError:
-        # return user,req_type
-        return "ERR_MULTI_USER",None
+        conn.close()
+        # return user
+        return "ERR_MULTI_USER"
 
     if result[0] == auth_key:
-        # return user,req_type
-        return result[1], req_type
+        conn.close()
+        # return user
+        return result[1]
 
     else:
-        # return user,req_type
-        return None,None
+        conn.close()
+        # return user
+        return "USER_NOT_FOUND"
 
 #def process():
