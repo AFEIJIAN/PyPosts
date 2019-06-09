@@ -55,4 +55,6 @@ class server:
         # perform authentication first
         auth_key = request.POST['auth_key']
         req_type = request.POST['req_type']
-        user,req_type = pre(self, auth_key, req_type)
+        user = pre(self, auth_key)
+        if user == "USER_NOT_FOUND" or user == "ERR_MULTI_USER" or user == None:
+            return user
