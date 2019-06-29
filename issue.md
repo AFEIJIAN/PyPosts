@@ -44,3 +44,4 @@
           - [How do you protect an API key in JavaScript?](https://hashnode.com/post/how-do-you-protect-an-api-key-in-javascript-ciibz8foj01fqj3xtsyxbc5ga)
         - Workarounds
           - Remove Auth Key Authentication and turn server into implementable (Framework) for other program uses
+Example of vulnerability report can be view at [here](https://github.com/AFEIJIAN/PyPosts/issues/1) (which is a vulnerability too!)
