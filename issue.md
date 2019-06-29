@@ -32,7 +32,7 @@
 ### Section "Vulnerability Details Info"
 - Detailed info about the vulnerability
   - "When will happen"
-    - This describe what situation the vulnearability is used which become vulnerable, e.g: `When Auth Key stored in JavaScript script files.`
+    - This describe what situation the vulnerability is used which become vulnerable, e.g: `When Auth Key stored in JavaScript script files.`
   - "How can this become vulnerable"
     - This explain why `When will happen` specified will become vulnerable, e.g: `JavaScript is client-side and Auth Key can be viewed via Browser Console.`
   - "Additional Info"
