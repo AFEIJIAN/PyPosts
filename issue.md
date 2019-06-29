@@ -28,3 +28,19 @@
         - and it will describe the actual stuff you wanted to talk about, but must be related to `Category` and `SubCategory 1`
           - For example: if the `Category` is `Server Internal` and `SubCategory 1` is `Features`, then `SubCategory 2` should be related to Features of Server itself
             - e.g: `Auth Key as Basic Authentication`
+
+### Section "Vulnerability Details Info"
+- Detailed info about the vulnerability
+  - "When will happen"
+    - This describe what situation the vulnearability is used which become vulnerable, e.g: `When Auth Key stored in JavaScript script files.`
+  - "How can this become vulnerable"
+    - This explain why `When will happen` specified will become vulnerable, e.g: `JavaScript is client-side and Auth Key can be viewed via Browser Console.`
+  - "Additional Info"
+    - This can specify some recommendations or workaround to solve this vulnerability, or you can show some proofs from another sources to proves that this is vulnerable
+      - Example of sources
+        - Recommendations
+          - Remove Auth Key Authentication
+        - Proofs
+          - [How do you protect an API key in JavaScript?](https://hashnode.com/post/how-do-you-protect-an-api-key-in-javascript-ciibz8foj01fqj3xtsyxbc5ga)
+        - Workarounds
+          - Remove Auth Key Authentication and turn server into implementable (Framework) for other program uses
