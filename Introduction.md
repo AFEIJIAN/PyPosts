@@ -20,5 +20,5 @@
 ## Dependencies
 - MySQL Backend: `mysql-connector`
 - JSON: Python's `JSON`
-- Compressing/Archiving:
+- Compressing/Archiving: Python's `tarfile`
 - XML:
