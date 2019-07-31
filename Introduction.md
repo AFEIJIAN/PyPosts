@@ -22,3 +22,4 @@
 - JSON: Python's `JSON`
 - Compressing/Archiving: Python's `tarfile`
 - XML:
+- GPG: `GnuPG` and Python's `python-gnupg`
