@@ -4,6 +4,7 @@
 - [**Security**](#security)
 - [**Backend**](#backend)
 - [**Dependencies**](#dependencies)
+- [**Backend Information: `MySQL`**](#backend_information:mysql)
 
 ## Security
 - Vulnerable HTML Tags Scan and Removal
@@ -23,3 +24,22 @@
 - Compressing/Archiving: Python's `tarfile`
 - XML:
 - GPG: `GnuPG` and Python's `python-gnupg`
+
+## Backend Information: `MySQL`
+### Database requirements
+- Database required: 1
+- Table required: 3
+    - User's info
+        - Columns:
+            -
+    - Author's info
+        - Columns:
+            -
+    - Post's info
+        - Columns:
+            - Post's Author
+            - Post ID
+            - Post Title
+            - Posted Date
+            - Last Modified Date
+            - Modified (`true` or `false`)
