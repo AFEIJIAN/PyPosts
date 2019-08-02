@@ -4,7 +4,7 @@
 - [**Security**](#security)
 - [**Backend**](#backend)
 - [**Dependencies**](#dependencies)
-- [**Backend Information: `MySQL`**](#backend_information:mysql)
+- [**Backend Information: `MySQL`**](#backend-information-mysql)
 
 ## Security
 - Vulnerable HTML Tags Scan and Removal
