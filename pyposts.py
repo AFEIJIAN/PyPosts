@@ -160,7 +160,19 @@ class PostManager:
     id = the Author ID
 
     """
-    def GetAuthorNameByID(self, id)
+    def GetAuthorNameByID(self, id):
+        if self.mysql_conn.is_connected:
+            cursor = self.mysql_conn.cursor()
+            cursor.execute("SELECT name FROM Authors WHERE id={}".format(str(id)))
+            author = cursor.fetchone()
+            # return author name if found
+            if bool(author):
+                return author[0]
+            else:
+                # as usual, return None if data not found
+                return None
+        else:
+            raise Exception("MySQL Server has been disconnected.")
 
     # constructor / blueprint
     """
