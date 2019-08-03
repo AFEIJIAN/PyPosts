@@ -93,13 +93,14 @@ class PostManager:
                 but if json is True, then a encoded JSON is returned
             2. Default is False
     
-    Value will be returned:
+    Python dictionary or JSON will be returned with values below:
     1. title (The post's title)
     2. content (The post's content)
     2. posted_date (The posted date)
     3. last_modified (The last day of the post modified)
     4. author (The ID of the post's author)
     5. modified (does the post was modified? true or false only)
+    6. id (Post id)
     """
     def GetPostById(self, id, json=False):
         if self.mysql_conn.is_connected():
