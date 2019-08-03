@@ -40,9 +40,11 @@ class panel:
 # PostManager does what it said,
 # it help you get the post content according to id and type
 #
-# form of dates:
-# in digit only and separated by underscore,
-# example: 09_06_2019 if the date is 9 June 2019
+# form of date and time:
+# in digit only and date separated by dashes while time separated by colons,
+# which is same as MySQL "DATETIME" data type
+# YYYY-MM-DD HH:MM:SS
+# example: "2019_06_09 03:05:06" if the date is 9 June 2019 and time is 03:05 AM and 6 Seconds
 class PostManager:
     
     ############################
@@ -57,24 +59,20 @@ class PostManager:
     Type = The requested content type, there are four types:
         1. title
         2. author (The ID of the post author)
-        3. date (Date of the post posted, see below for more info)
+        3. posted_date (Date of the post posted, see below for more info)
         4. content (The post's content)
 
-        for date, only digit and underscore is accepted, example: 09_06_2019 if the date is 9 June 2019
+        for date, please refer to the comments on line 43 - line 47
     """
     def GetPostInfoById(self, id, Type):
         # check if MySQL server connection is still established
         if self.mysql_conn.is_connected:
             cursor = self.mysql_conn.cursor()
-            cursor.execute("SELECT {} FROM Posts WHERE id={}".format(Type, str(id)))
+            cursor.execute("SELECT {} FROM posts WHERE id={}".format(Type, str(id)))
             content = cursor.fetchone()
             # when bool(content) == True, means value is found
             if bool(content):
-                if Type == "content":
-                    post_content = open(dirname(abspath(__file__))+'/pyposts/posts/{}.pypt'.format(str(id)),'r').read()
-                    return post_content
-                else:
-                    return content[0]
+                return content[0]
             # otherwise, None will be returned because result wasn't found
             else:
                 return None
@@ -105,26 +103,10 @@ class PostManager:
     def GetPostById(self, id, json=False):
         if self.mysql_conn.is_connected():
             cursor = self.mysql_conn.cursor()
-            cursor.execute("SELECT title,posted_date,last_modifed,author,modified FROM Posts WHERE id={}".format(str(id)))
+            cursor.execute("SELECT title,content,posted_date,last_modifed,author,modified FROM posts WHERE id={}".format(str(id)))
             result = cursor.fetchone()
+            # if result is found, acquire post infos and store in dictionary
             if bool(result):
-                try:
-                    # this post's content storage is TEMPORARY only, planned to archive whole post content and infos
-                    # post content's file is saved with id as the name of file with extension '.pypt'
-                    #
-                    # then all post files is stored in folder 'posts' from parent folder 'pyposts' which is under the same directory
-                    post_content = open(dirname(abspath(__file__))+'/pyposts/posts/{}.pypt'.format(str(id)),'r').read()
-                
-                # if current process's user can't access to file, return None and output Error MSG
-                except FileNotFoundError:
-                    print(exc_info())
-                    return None
-                
-                # if current process's user can't access to file, return None and output Error MSG
-                except PermissionError:
-                    print(exc_info())
-                    return None
- 
                 # create a dictionary for post infos
                 post = dict()
                 # assign values to dictionary via assignments
@@ -133,15 +115,15 @@ class PostManager:
                 # post title
                 post['title'] = result[0]
                 # post content
-                post['content'] = post_content
+                post['content'] = result[1]
                 # posted date
-                post['posted_date'] = result[1]
+                post['posted_date'] = result[2]
                 # last modified date
-                post['last_modified'] = result[2]
+                post['last_modified'] = result[3]
                 # post author
-                post['author'] = result[3]
-                # does post modified?
-                post['modified'] = result[4]
+                post['author'] = result[4]
+                # does post modified?, only return 0 or 1
+                post['modified'] = result[5]
 
                 # if json=True, encode to json string
                 if json:
@@ -163,19 +145,31 @@ class PostManager:
 
     Find author name according to the ID provided
     id = the Author ID
+    friendly = if it is true, the friendly version of the author name will be returned,
+                otherwise their username is returned
 
     """
-    def GetAuthorNameByID(self, id):
+    def GetAuthorNameByID(self, id, friendly=False):
         if self.mysql_conn.is_connected:
             cursor = self.mysql_conn.cursor()
-            cursor.execute("SELECT name FROM Authors WHERE id={}".format(str(id)))
-            author = cursor.fetchone()
-            # return author name if found
-            if bool(author):
-                return author[0]
+            if bool(friendly):
+                cursor.execute("SELECT author FROM authors WHERE id={}".format(str(id)))
+                username = cursor.fetchone()
+                # if result found, author's friendly name is returned
+                if bool(username):
+                    return username[0]
+                # if result not found, None is returned
+                else:
+                    return None
             else:
-                # as usual, return None if data not found
-                return None
+                cursor.execute("SELECT username FROM authors WHERE id={}".format(str(id)))
+                author = cursor.fetchone()
+                # return username if found
+                if bool(author):
+                    return author[0]
+                else:
+                    # as usual, return None if data not found
+                    return None
         else:
             raise Exception("MySQL Server has been disconnected.")
 
@@ -204,7 +198,7 @@ class PostManager:
 
     Actually this is just a method to tell that PostManager can be stopped
     what it does was just close the MySQL Server connection object
-    This must be called before closing your program
+    This must called before closing your program
     """
     def close(self):
         self.mysql_conn.close()
