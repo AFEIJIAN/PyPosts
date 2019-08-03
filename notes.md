@@ -8,13 +8,16 @@
 - MySQL
     - Amount of database required: 1
         - Tables:
-            - Authors
+            - Posts
                 - Columns:
                     - `title`
-                    - `content`
                     - `posted_date`
                     - `last_modified`
                     - `author`
                     - `modified`
                     - `id`
-            - Posts
+            - Authors
+                -  Columns:
+                    -  `author`
+                    -  `id`
+                    -  `username`
