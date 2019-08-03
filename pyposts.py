@@ -70,7 +70,11 @@ class PostManager:
             content = cursor.fetchone()
             # when bool(content) == True, means value is found
             if bool(content):
-                return content[0]
+                if Type == "content":
+                    post_content = open(dirname(abspath(__file__))+'/pyposts/posts/{}.pypt'.format(str(id)),'r').read()
+                    return post_content
+                else:
+                    return content[0]
             # otherwise, None will be returned because result wasn't found
             else:
                 return None
