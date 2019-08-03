@@ -181,7 +181,7 @@ class PostManager:
     mysql_passwd = Password of the MySQL User
     mysql_db = Name of the MySQL Database
     """
-    def __init__(self, mysql_host, mysql_port=3306, mysql_user, mysql_passwd, mysql_db):
+    def __init__(self, mysql_port=3306,mysql_host, mysql_user, mysql_passwd, mysql_db):
         self.mysql_host = mysql_host
         self.mysql_port = int(mysql_port)
         self.mysql_user = mysql_user
