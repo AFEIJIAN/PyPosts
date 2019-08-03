@@ -103,7 +103,7 @@ class PostManager:
     def GetPostById(self, id, json=False):
         if self.mysql_conn.is_connected():
             cursor = self.mysql_conn.cursor()
-            cursor.execute("SELECT title,content,posted_date,last_modifed,author,modified FROM posts WHERE id={}".format(str(id)))
+            cursor.execute("SELECT title,content,posted_date,last_modified,author,modified FROM posts WHERE id={}".format(str(id)))
             result = cursor.fetchone()
             # if result is found, acquire post infos and store in dictionary
             if bool(result):
