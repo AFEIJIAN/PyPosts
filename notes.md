@@ -9,15 +9,16 @@
     - Amount of database required: 1
         - Tables:
             - Posts
-                - Columns:
-                    - `title`
-                    - `posted_date`
-                    - `last_modified`
-                    - `author`
-                    - `modified`
-                    - `id`
+                - Columns (name,datatype):
+                    - `title`, `TEXT`
+                    - `content`, `LONGTEXT`
+                    - `posted_date`, `DATETIME`
+                    - `last_modified`, `DATETIME`
+                    - `author`, `int`
+                    - `modified`, `tinyint(1)`, which is a representation of `boolean`
+                    - `id`, `int`
             - Authors
-                -  Columns:
-                    -  `author`
-                    -  `id`
-                    -  `username`
+                -  Columns (name,datatype):
+                    -  `author`, `TEXT`
+                    -  `id`, `int`
+                    -  `username`, `TEXT`
