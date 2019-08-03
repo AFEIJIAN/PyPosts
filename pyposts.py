@@ -65,20 +65,15 @@ class PostManager:
         for date, please refer to the comments on line 43 - line 47
     """
     def GetPostInfoById(self, id, Type):
-        # check if MySQL server connection is still established
-        if self.mysql_conn.is_connected:
-            cursor = self.mysql_conn.cursor()
-            cursor.execute("SELECT {} FROM posts WHERE id={}".format(Type, str(id)))
-            content = cursor.fetchone()
-            # when bool(content) == True, means value is found
-            if bool(content):
-                return content[0]
-            # otherwise, None will be returned because result wasn't found
-            else:
-                return None
+        cursor = self.mysql_conn.cursor()
+        cursor.execute("SELECT {} FROM posts WHERE id={}".format(Type, str(id)))
+        content = cursor.fetchone()
+        # when bool(content) == True, means value is found
+        if bool(content):
+            return content[0]
+        # otherwise, None will be returned because result wasn't found
         else:
-            # raise error if MySQL Server has disconnected
-            raise Exception("MySQL Server has been disconnected.")
+            return None
 
 
     """
@@ -101,43 +96,40 @@ class PostManager:
     6. id (Post id)
     """
     def GetPostById(self, id, json=False):
-        if self.mysql_conn.is_connected():
-            cursor = self.mysql_conn.cursor()
-            cursor.execute("SELECT title,content,posted_date,last_modified,author,modified FROM posts WHERE id={}".format(str(id)))
-            result = cursor.fetchone()
-            # if result is found, acquire post infos and store in dictionary
-            if bool(result):
-                # create a dictionary for post infos
-                post = dict()
-                # assign values to dictionary via assignments
-                # post id
-                post['id'] = id
-                # post title
-                post['title'] = result[0]
-                # post content
-                post['content'] = result[1]
-                # posted date
-                post['posted_date'] = result[2]
-                # last modified date
-                post['last_modified'] = result[3]
-                # post author
-                post['author'] = result[4]
-                # does post modified?, only return 0 or 1
-                post['modified'] = result[5]
+        cursor = self.mysql_conn.cursor()
+        cursor.execute("SELECT title,content,posted_date,last_modified,author,modified FROM posts WHERE id={}".format(str(id)))
+        result = cursor.fetchone()
+        # if result is found, acquire post infos and store in dictionary
+        if bool(result):
+            # create a dictionary for post infos
+            post = dict()
+            # assign values to dictionary via assignments
+            # post id
+            post['id'] = id
+            # post title
+            post['title'] = result[0]
+            # post content
+            post['content'] = result[1]
+            # posted date
+            post['posted_date'] = result[2]
+            # last modified date
+            post['last_modified'] = result[3]
+            # post author
+            post['author'] = result[4]
+            # does post modified?, only return 0 or 1
+            post['modified'] = result[5]
 
-                # if json=True, encode to json string
-                if json:
-                    post_json = JSONEncoder(indent=4).encode(post)
-                    return post_json
+            # if json=True, encode to json string
+            if json:
+                post_json = JSONEncoder(indent=4).encode(post)
+                return post_json
 
-                else:
-                    # otherwise just return the python dictionary
-                    return post
             else:
-                # same as method above, None will be returned if result isn't found
-                return None
+                # otherwise just return the python dictionary
+                return post
         else:
-            raise Exception("MySQL Server has been disconnected.")
+            # same as method above, None will be returned if result isn't found
+            return None
 
 
     """
@@ -150,28 +142,25 @@ class PostManager:
 
     """
     def GetAuthorNameByID(self, id, friendly=False):
-        if self.mysql_conn.is_connected:
-            cursor = self.mysql_conn.cursor()
-            if bool(friendly):
-                cursor.execute("SELECT author FROM authors WHERE id={}".format(str(id)))
-                username = cursor.fetchone()
-                # if result found, author's friendly name is returned
-                if bool(username):
-                    return username[0]
-                # if result not found, None is returned
-                else:
-                    return None
+        cursor = self.mysql_conn.cursor()
+        if bool(friendly):
+            cursor.execute("SELECT author FROM authors WHERE id={}".format(str(id)))
+            username = cursor.fetchone()
+            # if result found, author's friendly name is returned
+            if bool(username):
+                return username[0]
+            # if result not found, None is returned
             else:
-                cursor.execute("SELECT username FROM authors WHERE id={}".format(str(id)))
-                author = cursor.fetchone()
-                # return username if found
-                if bool(author):
-                    return author[0]
-                else:
-                    # as usual, return None if data not found
-                    return None
+                return None
         else:
-            raise Exception("MySQL Server has been disconnected.")
+            cursor.execute("SELECT username FROM authors WHERE id={}".format(str(id)))
+            author = cursor.fetchone()
+            # return username if found
+            if bool(author):
+                return author[0]
+            else:
+                # as usual, return None if data not found
+                return None
 
     # constructor / blueprint
     """
