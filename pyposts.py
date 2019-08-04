@@ -122,12 +122,12 @@ class PostManager:
             post['content'] = result[1]
             # posted date
             post['posted_date'] = "{}-{}-{} {}:{}:{}".format(
-                                                        result[0].year,
-                                                        result[0].month,
-                                                        result[0].day,
-                                                        result[0].hour,
-                                                        result[0].minute,
-                                                        result[0].second
+                                                        result[2].year,
+                                                        result[2].month,
+                                                        result[2].day,
+                                                        result[2].hour,
+                                                        result[2].minute,
+                                                        result[2].second
                                                         )
             # last modified date
             post['last_modified'] = result[3]
