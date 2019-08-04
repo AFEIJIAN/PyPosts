@@ -158,7 +158,7 @@ class PostManager:
                 otherwise their username is returned
 
     """
-    def GetAuthorNameByID(self, id, friendly=False):
+    def GetAuthorNameById(self, id, friendly=False):
         cursor = self.mysql_conn.cursor()
         if bool(friendly):
             cursor.execute("SELECT author FROM authors WHERE id={}".format(str(id)))
