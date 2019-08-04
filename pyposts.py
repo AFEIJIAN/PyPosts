@@ -44,7 +44,7 @@ class panel:
 # in digit only and date separated by dashes while time separated by colons,
 # which is same as MySQL "DATETIME" data type
 # YYYY-MM-DD HH:MM:SS
-# example: "2019_06_09 03:05:06" if the date is 9 June 2019 and time is 03:05 AM and 6 Seconds
+# example: "2019-06-09 03:05:06" if the date is 9 June 2019 and time is 03:05 AM and 6 Seconds
 class PostManager:
     
     ############################
@@ -70,7 +70,17 @@ class PostManager:
         content = cursor.fetchone()
         # when bool(content) == True, means value is found
         if bool(content):
-            return content[0]
+            if Type == "posted_date":
+                posted_date = "{}-{}-{} {}:{}:{}".format(
+                                                        content[0].year,
+                                                        content[0].month,
+                                                        content[0].day,
+                                                        content[0].hour,
+                                                        content[0].minute,
+                                                        content[0].second
+                                                        )
+            else:
+                return content[0]
         # otherwise, None will be returned because result wasn't found
         else:
             return None
@@ -111,7 +121,14 @@ class PostManager:
             # post content
             post['content'] = result[1]
             # posted date
-            post['posted_date'] = result[2]
+            post['posted_date'] = "{}-{}-{} {}:{}:{}".format(
+                                                        result[0].year,
+                                                        result[0].month,
+                                                        result[0].day,
+                                                        result[0].hour,
+                                                        result[0].minute,
+                                                        result[0].second
+                                                        )
             # last modified date
             post['last_modified'] = result[3]
             # post author
