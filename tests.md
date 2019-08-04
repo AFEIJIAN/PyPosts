@@ -3,8 +3,8 @@
 ## class `PostManager`
 - [x] `GetPostById` without json
 - [x] `GetPostById` with json
-- [] `GetAuthorById` with `friendly=False`
-- [] GetAuthorById` with `friendly=True`
+- [x] `GetAuthorById` with `friendly=False`
+- [x] GetAuthorById` with `friendly=True`
 - `GetPostInfoById`:
     - [] `title`
     - [] `author`
