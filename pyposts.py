@@ -44,7 +44,7 @@ class panel:
 # in digit only and date separated by dashes while time separated by colons,
 # which is same as MySQL "DATETIME" data type
 # YYYY-MM-DD HH:MM:SS
-# example: "2019-06-09 03:05:06" if the date is 9 June 2019 and time is 03:05 AM and 6 Seconds
+# example: "2019-06-09 03:05:06" if the date is 9 June 2019 and time is 03:05:06 AM
 class PostManager:
     
     ############################
