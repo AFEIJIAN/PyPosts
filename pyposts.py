@@ -149,6 +149,18 @@ class PostManager:
             return None
 
 
+
+    """
+    method GetPostByDate
+    Return posts with amounts request via Python Dictionary or JSON
+    
+    1. date, must be a Python's datetime.datetime object
+    2. amount, amount of post required, if not provided, unlimited result will be returned
+    3. json, result will encode into JSON string if json=True, default is False
+    """
+    def GetPostByDate(self, date, amount, json=False)
+
+    
     """
     method GetAuthorById
 
