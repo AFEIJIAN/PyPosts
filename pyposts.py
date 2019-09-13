@@ -158,7 +158,12 @@ class PostManager:
     2. amount, amount of post required, if not provided, unlimited result will be returned
     3. json, result will encode into JSON string if json=True, default is False
     """
-    def GetPostByDate(self, date, amount, json=False)
+    def GetPostByDate(self, date, amount, json=False):
+        cursor = self.mysql_conn.cursor()
+        # concatenate Python's datetime into MySQL datetime in string form
+        date = date.strftime("%d-%m-%Y %H:%M:%S")
+        # uncompleted MySQL statement
+        #cursor.execute("SELECT ")
 
     
     """
