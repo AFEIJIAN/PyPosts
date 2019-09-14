@@ -8,7 +8,7 @@
 - MySQL
     - Amount of database required: 1
         - Tables:
-            - Posts
+            - `posts`
                 - Columns (name,datatype):
                     - `title`, `TEXT`
                     - `content`, `LONGTEXT`
@@ -17,7 +17,7 @@
                     - `author`, `int`
                     - `modified`, `tinyint(1)`, which is a representation of `boolean`
                     - `id`, `int`
-            - Authors
+            - `authors`
                 -  Columns (name,datatype):
                     -  `author`, `TEXT`
                     -  `id`, `int`

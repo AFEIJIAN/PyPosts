@@ -44,7 +44,7 @@ class panel:
 # in digit only and date separated by dashes while time separated by colons,
 # which is same as MySQL "DATETIME" data type
 # YYYY-MM-DD HH:MM:SS
-# example: "2019_06_09 03:05:06" if the date is 9 June 2019 and time is 03:05 AM and 6 Seconds
+# example: "2019-06-09 03:05:06" if the date is 9 June 2019 and time is 03:05:06 AM
 class PostManager:
     
     ############################
@@ -70,7 +70,17 @@ class PostManager:
         content = cursor.fetchone()
         # when bool(content) == True, means value is found
         if bool(content):
-            return content[0]
+            if Type == "posted_date":
+                posted_date = "{}-{}-{} {}:{}:{}".format(
+                                                        content[0].year,
+                                                        content[0].month,
+                                                        content[0].day,
+                                                        content[0].hour,
+                                                        content[0].minute,
+                                                        content[0].second
+                                                        )
+            else:
+                return content[0]
         # otherwise, None will be returned because result wasn't found
         else:
             return None
@@ -111,7 +121,14 @@ class PostManager:
             # post content
             post['content'] = result[1]
             # posted date
-            post['posted_date'] = result[2]
+            post['posted_date'] = "{}-{}-{} {}:{}:{}".format(
+                                                        result[2].year,
+                                                        result[2].month,
+                                                        result[2].day,
+                                                        result[2].hour,
+                                                        result[2].minute,
+                                                        result[2].second
+                                                        )
             # last modified date
             post['last_modified'] = result[3]
             # post author
@@ -132,6 +149,23 @@ class PostManager:
             return None
 
 
+
+    """
+    method GetPostByDate
+    Return posts with amounts request via Python Dictionary or JSON
+    
+    1. date, must be a Python's datetime.datetime object
+    2. amount, amount of post required, if not provided, unlimited result will be returned
+    3. json, result will encode into JSON string if json=True, default is False
+    """
+    def GetPostByDate(self, date, amount, json=False):
+        cursor = self.mysql_conn.cursor()
+        # concatenate Python's datetime into MySQL datetime in string form
+        date = date.strftime("%d-%m-%Y %H:%M:%S")
+        # uncompleted MySQL statement
+        #cursor.execute("SELECT ")
+
+    
     """
     method GetAuthorById
 
@@ -141,7 +175,7 @@ class PostManager:
                 otherwise their username is returned
 
     """
-    def GetAuthorNameByID(self, id, friendly=False):
+    def GetAuthorNameById(self, id, friendly=False):
         cursor = self.mysql_conn.cursor()
         if bool(friendly):
             cursor.execute("SELECT author FROM authors WHERE id={}".format(str(id)))

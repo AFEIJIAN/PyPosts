@@ -1,12 +1,14 @@
 # Testing list
 
+# Phase 1
+
 ## class `PostManager`
 - [x] `GetPostById` without json
-- [] `GetPostById` with json
-- [] `GetAuthorById` with `friendly=False`
-- [] GetAuthorById` with `friendly=True`
+- [x] `GetPostById` with json
+- [x] `GetAuthorById` with `friendly=False`
+- [x] GetAuthorById` with `friendly=True`
 - `GetPostInfoById`:
-    - [] `title`
-    - [] `author`
-    - [] `posted_date`
-    - [] `content`
+    - [x] `title`
+    - [x] `author`
+    - [x] `posted_date`
+    - [x] `content`
