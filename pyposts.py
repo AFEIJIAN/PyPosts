@@ -1,6 +1,7 @@
-# pyramid web framework
-from pyramid.config import Configurator
-from wsgiref.simple_server import make_server
+# pyramid web framework, not using right now
+#from pyramid.config import Configurator
+#from wsgiref.simple_server import make_server
+
 # mysql connector to interact with MySQL Server
 import mysql.connector as sql
 # required JSON to return post content
@@ -10,7 +11,7 @@ from os.path import dirname,abspath
 # for error output
 from sys import exc_info,exit
 
-# object aren't necessary right now, commented
+# object panel aren't necessary right now, commented
 """
 # consist web management panel
 class panel:
@@ -42,7 +43,7 @@ class panel:
 #
 # form of date and time:
 # in digit only and date separated by dashes while time separated by colons,
-# which is same as MySQL "DATETIME" data type
+# which is same as MySQL "DATETIME" data type, please refer to MySQL Documentation
 # YYYY-MM-DD HH:MM:SS
 # example: "2019-06-09 03:05:06" if the date is 9 June 2019 and time is 03:05:06 AM
 class PostManager:
@@ -108,7 +109,9 @@ class PostManager:
     def GetPostById(self, id, json=False):
         cursor = self.mysql_conn.cursor()
         cursor.execute("SELECT title,content,posted_date,last_modified,author,modified FROM posts WHERE id={}".format(str(id)))
+        # fetch result
         result = cursor.fetchone()
+
         # if result is found, acquire post infos and store in dictionary
         if bool(result):
             # create a dictionary for post infos
@@ -158,12 +161,58 @@ class PostManager:
     2. amount, amount of post required, if not provided, unlimited result will be returned
     3. json, result will encode into JSON string if json=True, default is False
     """
-    def GetPostByDate(self, date, amount, json=False):
+    def GetPostByPostedDate(self, date, amount, json=False):
         cursor = self.mysql_conn.cursor()
         # concatenate Python's datetime into MySQL datetime in string form
         date = date.strftime("%d-%m-%Y %H:%M:%S")
-        # uncompleted MySQL statement
-        #cursor.execute("SELECT ")
+        cursor.execute("SELECT title,content,posted_date,last_modified,author,modified FROM posts WHERE posted_date <= {}".format(date))
+
+        # remember to catch MySQL.Exception.UnreadResultError!
+        #try:
+
+        # fetch result
+        result = cursor.fetchone()
+
+        #except MySQL.UnreadResultError:
+        
+        # if result is found, acquire post infos and store in dictionary
+        if bool(result):
+            # create a dictionary for post infos
+            post = dict()
+            # assign values to dictionary via assignments
+            # post id
+            post['id'] = id
+            # post title
+            post['title'] = result[0]
+            # post content
+            post['content'] = result[1]
+            # posted date
+            post['posted_date'] = "{}-{}-{} {}:{}:{}".format(
+                                                        result[2].year,
+                                                        result[2].month,
+                                                        result[2].day,
+                                                        result[2].hour,
+                                                        result[2].minute,
+                                                        result[2].second
+                                                        )
+            # last modified date
+            post['last_modified'] = result[3]
+            # post author
+            post['author'] = result[4]
+            # does post modified?, only return 0 or 1
+            post['modified'] = result[5]
+
+            # if json=True, encode to json string
+            if json:
+                post_json = JSONEncoder(indent=4).encode(post)
+                return post_json
+
+            else:
+                # otherwise just return the python dictionary
+                return post
+        else:
+            # same as method above, None will be returned if result isn't found
+            return None
 
     
     """
@@ -196,8 +245,11 @@ class PostManager:
                 # as usual, return None if data not found
                 return None
 
-    # constructor / blueprint
     """
+    Object Constructor, will be called when object is being built
+
+    Before PostManager can be used, MySQL Server Host's Info must be provided via
+
     mysql_host = Host of MySQL server
     mysql_port = Port of MySQL Server
     mysql_user = User for the database of the MySQL Server
@@ -208,9 +260,12 @@ class PostManager:
         self.mysql_host = mysql_host
         if bool(mysql_port):
             self.mysql_port = int(mysql_port)
+
         else:
             self.mysql_port = 3306
+
         self.mysql_user = mysql_user
+        # vulnerable, see #6
         self.mysql_passwd = mysql_passwd
         self.mysql_db = mysql_db
         self.mysql_conn = sql.connect(host=self.mysql_host,
