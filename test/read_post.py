@@ -11,6 +11,7 @@ def prepare():
             'modified':0}
 
 def insert(post):
+    # according to issue #8 , this script will prompt for MySQL Server details
     conn = sql.connect(host='127.0.0.1', port=3306, user='py', passwd='py1234', database='pyposts')
     cur = conn.cursor()
     cur.execute("INSERT INTO posts (title,content,posted_date,last_modified,author,modified,id) VALUES ('{}','{}','{}',{},{},{},{})".format(post['post_title'],post['post_content'],post['posted_date'],post['last_modified'],post['author'],post['modified'],post['post_id']))
@@ -18,7 +19,9 @@ def insert(post):
     conn.close()
 
 def get_post():
+    # according to issue #8 , this script will prompt for MySQL Server details
     pm = PostManager('127.0.0.1',3306,'py','py1234','pyposts')
+    # according to issue #8, output must be user-friendly
     # testing: pm.GetPostById
     print("Testing: pm.GetPostById without json.")
     result = pm.GetPostById(1)
@@ -27,6 +30,7 @@ def get_post():
             print(x+' : '+str(y))
     else:
         print("Result is None.")
+        # according to issue #8, output must be user-friendly
     print("Testing: pm.GetPostById with json.")
     result = pm.GetPostById(1,json=True)
     if bool(result):
@@ -35,11 +39,13 @@ def get_post():
         print("Result is None.")
 
 def get_post_id(id):
+    # according to issue #8 , this script will prompt for MySQL Server details
     pm = PostManager('127.0.0.1',3306,'py','py1234','pyposts')
     # Testing: pm.GetPostInfoById
     Type = ['title','author','posted_date','content']
     for x in Type:
         print()
+        # according to issue #8, output must be user-friendly
         print("Testing: pm.GetPostInfoById with Type = "+x)
         result = pm.GetPostInfoById(id, x)
         print()
@@ -47,6 +53,7 @@ def get_post_id(id):
         print()
 
 def insert_author():
+    # according to issue #8 , this script will prompt for MySQL Server details
     conn = sql.connect(host='127.0.0.1', port=3306, user='py', passwd='py1234', database='pyposts')
     cur = conn.cursor()
     cur.execute("INSERT INTO authors (author,id,username) VALUES ('test',1,'test')")
@@ -54,10 +61,13 @@ def insert_author():
     conn.close()
 
 def get_author():
+    # according to issue #8 , this script will prompt for MySQL Server details
     pm = PostManager('127.0.0.1',3306,'py','py1234','pyposts')
+    # according to issue #8, output must be user-friendly
     print("Testing pm.GetAuthorNameById with friendly=True")
     result = pm.GetAuthorNameById(1,friendly=True)
     print(result)
+    # according to issue #8, output must be user-friendly
     print("Testing pm.GetAuthorNameById with friendly=False")
     result = pm.GetAuthorNameById(1,friendly=False)
     print(result)
