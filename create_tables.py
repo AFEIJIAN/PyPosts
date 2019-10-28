@@ -6,6 +6,7 @@ def create(mysql_conn):
     print("Creating table 'posts'.")
     cur.execute("create table posts ( \
     id int, \
+    str_id varchar(255), \
     author int, \
     title TEXT, \
     content LONGTEXT, \
