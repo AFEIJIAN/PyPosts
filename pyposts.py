@@ -117,7 +117,7 @@ class PostManager:
         cursor = self.mysql_conn.cursor(buffered=True)
         cursor.execute("SELECT str_id,title,content,posted_date,last_modified,author,modified FROM posts WHERE id={}".format(str(id)))
         # fetch result
-           result = cursor.fetchone()
+        result = cursor.fetchone()
         
         # if result is found, acquire post infos and store in dictionary
         if bool(result):
