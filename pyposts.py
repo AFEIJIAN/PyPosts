@@ -68,28 +68,29 @@ class PostManager:
         for date, please refer to the comments on line 43 - line 50
     """
     def GetPostInfoById(self, id, Type):
-        cursor = self.mysql_conn.cursor()
+        cursor = self.mysql_conn.cursor(buffered=True)
         cursor.execute("SELECT {} FROM posts WHERE id={}".format(Type, str(id)))
-        try:
-            content = cursor.fetchone()
-
-        # we will ignore unread results, since ids can't be duplicated,
-        # it must be a developer/creator mistakes
-        except sql.errors.InternalError:
-            pass
+        
+        content = cursor.fetchone()
 
         # when bool(content) == True, means value is found
         if bool(content):
             # if result is a date, change its microsecond to 0 and convert it into string
             if Type == "posted_date":
                 posted_date = str(content[0].replace(microsecond=0))
+                # close the cursor first to clear buffer
+                cursor.close()
                 return posted_date
 
             else:
+                # close the cursor first to clear buffer
+                cursor.close()
                 return content[0]
 
         # otherwise, None will be returned because result wasn't found
         else:
+            # close the cursor first to clear buffer
+            cursor.close()
             return None
 
 
@@ -113,17 +114,11 @@ class PostManager:
     6. id (Post id)
     """
     def GetPostById(self, id, json=False):
-        cursor = self.mysql_conn.cursor()
+        cursor = self.mysql_conn.cursor(buffered=True)
         cursor.execute("SELECT str_id,title,content,posted_date,last_modified,author,modified FROM posts WHERE id={}".format(str(id)))
-        try:
-            # fetch result
-            result = cursor.fetchone()
+        # fetch result
+           result = cursor.fetchone()
         
-        # we will ignore unread results, since ids can't be duplicated,
-        # it must be a developer/creator mistakes
-        except sql.errors.InternalError:
-            pass
-
         # if result is found, acquire post infos and store in dictionary
         if bool(result):
             # create a dictionary for post infos
@@ -157,13 +152,19 @@ class PostManager:
             # if json=True, encode to json string
             if json:
                 post_json = JSONEncoder(indent=4).encode(post)
+                # close the cursor first to clear buffer
+                cursor.close()
                 return post_json
 
             else:
                 # otherwise just return the python dictionary
+                # close the cursor first to clear buffer
+                cursor.close()
                 return post
         else:
             # same as method above, None will be returned if result isn't found
+            # close the cursor first to clear buffer
+            cursor.close()
             return None
 
 
@@ -185,7 +186,7 @@ class PostManager:
             # raise error if invalid
             raise TypeError("Amount must be an integer.")
 
-        cursor = self.mysql_conn.cursor()
+        cursor = self.mysql_conn.cursor(buffered=True)
         # convert Python's datetime into string form (which is compatible with MySQL DATETIME)
         # and change it's microsecond to 0
         date = str(date.replace(microsecond=0))
@@ -305,13 +306,19 @@ class PostManager:
             # if json=True, encode to json string
             if json:
                 posts_json = JSONEncoder(indent=4).encode(posts)
+                # close the cursor first to clear buffer
+                cursor.close()
                 return posts_json
 
             else:
                 # otherwise just return the python dictionary
+                # close the cursor first to clear buffer
+                cursor.close()
                 return posts
         else:
             # same as method above, None will be returned if result isn't found
+            # close the cursor first to clear buffer
+            cursor.close()
             return None
     
 
@@ -338,7 +345,7 @@ class PostManager:
             # raise error if invalid
             raise TypeError("Amount must be an integer.")
         
-        cursor = self.mysql_conn.cursor()
+        cursor = self.mysql_conn.cursor(buffered=True)
         # replace microsecond to 0 and change date object into string
         date = str(date.replace(microsecond=0))
         # execute query
@@ -463,14 +470,20 @@ class PostManager:
             if json:
                 # if json set to True, convert it into JSON string
                 posts_json = JSONEncoder(indent=4).encode(posts)
+                # close the cursor first to clear buffer
+                cursor.close()
                 return posts_json
 
             else:
                 # otherwise just return the dict
+                # close the cursor first to clear buffer
+                cursor.close()
                 return posts
 
         # if no result found, return None
         else:
+            # close the cursor first to clear buffer
+            cursor.close()
             return None
 
     
@@ -484,37 +497,36 @@ class PostManager:
 
     """
     def GetAuthorNameById(self, id, friendly=False):
-        cursor = self.mysql_conn.cursor()
+        cursor = self.mysql_conn.cursor(buffered=True)
         if bool(friendly):
             cursor.execute("SELECT author FROM authors WHERE id={}".format(str(id)))
-            try:
-                username = cursor.fetchone()
-            
-            except sql.errors.InternalError:
-                # we will ignore unread results, because author id can't be duplicated
-                # it must be a developer/admins mistakes
-                pass
+
+            username = cursor.fetchone()
 
             # if result found, author's friendly name is returned
             if bool(username):
+                # close the cursor first to clear buffer
+                cursor.close()
                 return username[0]
             # if result not found, None is returned
             else:
+                # close the cursor first to clear buffer
+                cursor.close()
                 return None
         else:
             cursor.execute("SELECT username FROM authors WHERE id={}".format(str(id)))
-            try:
-                author = cursor.fetchone()
             
-            except sql.errors.InternalError:
-                # same as above, we ignore unread results
-                pass
+            author = cursor.fetchone()
 
             # return username if found
             if bool(author):
+                # close the cursor first to clear buffer
+                cursor.close()
                 return author[0]
             else:
                 # as usual, return None if data not found
+                # close the cursor first to clear buffer
+                cursor.close()
                 return None
 
     """
