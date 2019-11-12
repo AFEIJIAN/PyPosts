@@ -257,7 +257,7 @@ class PostManager:
 
 
             # elif result is equal to or less than requested
-            elif result_count =< amount:
+            elif result_count <= amount:
                 for x in result:
                     # convert datetime object into string
                     # will change their microsecond to 0 at the same time
@@ -342,7 +342,7 @@ class PostManager:
         # replace microsecond to 0 and change date object into string
         date = str(date.replace(microsecond=0))
         # execute query
-        cursor.execute("SELECT id,str_id,title,author,content,posted_date,last_modified,modified FROM posts WHERE last_modified =< '{}'".format(date))
+        cursor.execute("SELECT id,str_id,title,author,content,posted_date,last_modified,modified FROM posts WHERE last_modified <= '{}'".format(date))
 
         # fetch all result
         result = cursor.fetchall()
@@ -409,7 +409,7 @@ class PostManager:
                         break
 
             # if result is same or less than requested
-            elif result_count =< amount:
+            elif result_count <= amount:
                 for x in result:
                     # create a nested dict
                     posts[x[7]] = dict()
