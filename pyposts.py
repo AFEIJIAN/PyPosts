@@ -10,6 +10,8 @@ from json import JSONEncoder
 from os.path import dirname,abspath
 # for error output
 from sys import exc_info,exit
+# datetime object, used for post writing and data type verification
+from datetime import datetime as dt
 
 # object panel aren't necessary right now, commented
 """
@@ -63,25 +65,29 @@ class PostManager:
         3. posted_date (Date of the post posted, see below for more info)
         4. content (The post's content)
 
-        for date, please refer to the comments on line 43 - line 47
+        for date, please refer to the comments on line 43 - line 50
     """
     def GetPostInfoById(self, id, Type):
         cursor = self.mysql_conn.cursor()
         cursor.execute("SELECT {} FROM posts WHERE id={}".format(Type, str(id)))
-        content = cursor.fetchone()
+        try:
+            content = cursor.fetchone()
+
+        # we will ignore unread results, since ids can't be duplicated,
+        # it must be a developer/creator mistakes
+        except sql.Exception.UnreadResultError:
+            pass
+
         # when bool(content) == True, means value is found
         if bool(content):
+            # if result is a date, change its microsecond to 0 and convert it into string
             if Type == "posted_date":
-                posted_date = "{}-{}-{} {}:{}:{}".format(
-                                                        content[0].year,
-                                                        content[0].month,
-                                                        content[0].day,
-                                                        content[0].hour,
-                                                        content[0].minute,
-                                                        content[0].second
-                                                        )
+                posted_date = str(content[0].replace(microsecond=0))
+                return posted_date
+
             else:
                 return content[0]
+
         # otherwise, None will be returned because result wasn't found
         else:
             return None
@@ -108,9 +114,15 @@ class PostManager:
     """
     def GetPostById(self, id, json=False):
         cursor = self.mysql_conn.cursor()
-        cursor.execute("SELECT title,content,posted_date,last_modified,author,modified FROM posts WHERE id={}".format(str(id)))
-        # fetch result
-        result = cursor.fetchone()
+        cursor.execute("SELECT str_id,title,content,posted_date,last_modified,author,modified FROM posts WHERE id={}".format(str(id)))
+        try:
+            # fetch result
+            result = cursor.fetchone()
+        
+        # we will ignore unread results, since ids can't be duplicated,
+        # it must be a developer/creator mistakes
+        except sql.Exception.UnreadResultError:
+            pass
 
         # if result is found, acquire post infos and store in dictionary
         if bool(result):
@@ -119,25 +131,28 @@ class PostManager:
             # assign values to dictionary via assignments
             # post id
             post['id'] = id
+            # post string id
+            post['str_id'] = result[0]
             # post title
-            post['title'] = result[0]
+            post['title'] = result[1]
             # post content
-            post['content'] = result[1]
-            # posted date
-            post['posted_date'] = "{}-{}-{} {}:{}:{}".format(
-                                                        result[2].year,
-                                                        result[2].month,
-                                                        result[2].day,
-                                                        result[2].hour,
-                                                        result[2].minute,
-                                                        result[2].second
-                                                        )
+            post['content'] = result[2]
+            # posted date, will change microsecond to 0 at the same time
+            post['posted_date'] = str(result[3].replace(microsecond=0))
             # last modified date
-            post['last_modified'] = result[3]
+            post['last_modified'] = result[4]
             # post author
-            post['author'] = result[4]
+            post['author'] = result[5]
             # does post modified?, only return 0 or 1
-            post['modified'] = result[5]
+            if result[6] == 1:
+                # if it is 1, it means True
+                post['modified'] = True
+            elif result[6] == 0:
+                # if it is 0, it means False
+                post['modified'] = False
+            else:
+                # otherwise, it would be None (invalid value)
+                post['modified'] = None
 
             # if json=True, encode to json string
             if json:
@@ -154,7 +169,7 @@ class PostManager:
 
 
     """
-    method GetPostByDate
+    method GetPostByPostedDate
     Return posts with amounts request via Python Dictionary or JSON
     
     1. date, must be a Python's datetime.datetime object
@@ -162,56 +177,300 @@ class PostManager:
     3. json, result will encode into JSON string if json=True, default is False
     """
     def GetPostByPostedDate(self, date, amount, json=False):
+        # data type checks for arguments
+        if isinstance(date, dt) == False:
+            # raise error if invalid
+            raise TypeError("Date must be a valid datetime object.")
+        if isinstance(amount, int) == False:
+            # raise error if invalid
+            raise TypeError("Amount must be an integer.")
+
         cursor = self.mysql_conn.cursor()
-        # concatenate Python's datetime into MySQL datetime in string form
-        date = date.strftime("%d-%m-%Y %H:%M:%S")
-        cursor.execute("SELECT title,content,posted_date,last_modified,author,modified FROM posts WHERE posted_date <= {}".format(date))
-
-        # remember to catch MySQL.Exception.UnreadResultError!
-        #try:
-
+        # convert Python's datetime into string form (which is compatible with MySQL DATETIME)
+        # and change it's microsecond to 0
+        date = str(date.replace(microsecond=0))
+        cursor.execute("SELECT id,str_id,title,content,posted_date,last_modified,author,modified FROM posts WHERE posted_date <= {}".format(date))
         # fetch result
-        result = cursor.fetchone()
-
-        #except MySQL.UnreadResultError:
+        result = cursor.fetchall()
         
-        # if result is found, acquire post infos and store in dictionary
+        # if result is found, count if results is more or less than requested
         if bool(result):
-            # create a dictionary for post infos
-            post = dict()
-            # assign values to dictionary via assignments
-            # post id
-            post['id'] = id
-            # post title
-            post['title'] = result[0]
-            # post content
-            post['content'] = result[1]
-            # posted date
-            post['posted_date'] = "{}-{}-{} {}:{}:{}".format(
-                                                        result[2].year,
-                                                        result[2].month,
-                                                        result[2].day,
-                                                        result[2].hour,
-                                                        result[2].minute,
-                                                        result[2].second
-                                                        )
-            # last modified date
-            post['last_modified'] = result[3]
-            # post author
-            post['author'] = result[4]
-            # does post modified?, only return 0 or 1
-            post['modified'] = result[5]
+            result_count = len(result)
+            # if result is more than requested
+            posts = dict()
+            if result_count > amount:
+
+                # will not remove unwanted results from list right now, because this function will
+                # not occupy large memory for a long time (in case result is large)
+                # but unwanted result removal might support in the future releases
+
+                # assign post information to the nested dict's keys
+                for loop in range(result_count):
+                    # convert date into string
+                    # will change microsecond to 0 at the same time
+                    result[loop][4] = str(result[loop][4].replace(microsecond=0))
+
+                    # check if last_modified date is None or not
+                    if bool(result[loop][5]) != True or result[loop][5] != None:
+                        # if not means it is a valid date, convert it to string then
+                        # will change microsecond to 0 at the same time
+                        result[loop][5] = str(result[loop][5].replace(microsecond=0))
+                    else:
+                        # otherwise, change it's value into None
+                        result[loop][5] = None
+
+                    # create a nested dictionary
+                    posts[result[loop][4]] = dict()
+                    # make a pointer (reference) of the nested dictionary for easier code reading
+                    cur_post = posts[result[loop][4]]
+
+                    # assign post information to the nested dict's keys
+                    # post id
+                    cur_post['id'] = result[loop][0]
+                    # post string id
+                    cur_post['str_id'] = result[loop][1]
+                    # post title
+                    cur_post['title'] = result[loop][2]
+                    # post content
+                    cur_post['content'] = result[loop][3]
+                    # post's posted date
+                    cur_post['posted_date'] = result[loop][4]
+                    # post's last modified date
+                    cur_post['last_modified'] = result[loop][5]
+                    # post author, represented by their ids
+                    cur_post['author'] = result[loop][6]
+                    # post modified attribute
+                    if result[loop][7] == 1:
+                        # if it is 1, means true
+                        cur_post['modified'] = True
+                    elif result[loop][7] == 0:
+                        # if it is 0, means false
+                        cur_post['modified'] = False
+                    else:
+                        # otherwise, it is None (Invalid value)
+                        cur_post['modified'] = None
+
+                    # if list index reached the post amount requested, break the loop
+                    if loop == (amount-1):
+                        break
+
+
+
+            # elif result is equal to or less than requested
+            elif result_count =< amount:
+                for x in result:
+                    # convert datetime object into string
+                    # will change their microsecond to 0 at the same time
+                    # posted_date
+                    x[4] = str(x[4].replace(microsecond=0))
+                    # checks if last_modified is None or a valid date
+                    if bool(x[5]) == True or x[5] != None:
+                        # if it is a valid date, convert it into a string
+                        x[5] = str(x[5].replace(microsecond=0))
+
+
+                    # create a nested dictionary
+                    posts[x[4]] = dict()
+                    # make a pointer (reference) of the current nested dictionary
+                    cur_post = posts[x[4]]
+
+                    # assign post information to the nested dict's keys
+                    # post id
+                    cur_post['id'] = x[0]
+                    # post string id
+                    cur_post['str_id'] = x[1]
+                    # post title
+                    cur_post['title'] = x[2]
+                    # post content
+                    cur_post['content'] = x[3]
+
+
+                    # post's posted date
+                    cur_post['posted_date'] = x[4]
+                    # post's last modified date
+                    cur_post['last_modified'] = x[5]
+                    # post author
+                    cur_post['author'] = x[6]
+                    # post modified attribute (True or False)
+                    if x[7] == 1:
+                        # if it is 1, it means True
+                        cur_post['modified'] = True
+                    elif x[7] == 0:
+                        # if it is 0, it means False
+                        cur_post['modified'] = False
+                    else:
+                        # otherwise, it means None (invalid value)
+                        cur_post['modified'] = None
 
             # if json=True, encode to json string
             if json:
-                post_json = JSONEncoder(indent=4).encode(post)
-                return post_json
+                posts_json = JSONEncoder(indent=4).encode(posts)
+                return posts_json
 
             else:
                 # otherwise just return the python dictionary
-                return post
+                return posts
         else:
             # same as method above, None will be returned if result isn't found
+            return None
+    
+
+    """
+    method GetPostByModifiedDate
+
+    Get post according to the modified date (date) provided
+    date = Modified date, it must be a Python.datetime.datetime object
+    amount = Amount of posts needed
+    json = If set to True, result will convert into JSON string,
+            otherwise Python dictionary will be returned
+
+    This function will return Python dictionary which contains all
+    posts information, or JSON string if json is set to True
+
+    In case no posts were found, None will be returned
+    """
+    def GetPostByModifiedDate(self, date, amount, json=False):
+        # data type checks for arguments
+        if isinstance(date, dt) == False:
+            # raise error if invalid
+            raise TypeError("Date must be a valid datetime object.")
+        if isinstance(amount, int) == False:
+            # raise error if invalid
+            raise TypeError("Amount must be an integer.")
+        
+        cursor = self.mysql_conn.cursor()
+        # replace microsecond to 0 and change date object into string
+        date = str(date.replace(microsecond=0))
+        # execute query
+        cursor.execute("SELECT id,str_id,title,author,content,posted_date,last_modified,modified FROM posts WHERE last_modified =< '{}'".format(date))
+
+        # fetch all result
+        result = cursor.fetchall()
+
+        # if result found
+        if bool(result):
+            result_count = len(result)
+            # if result is more than requested
+            # create a dict to store posts
+            posts = dict()
+            if result_count > amount:
+                for loop in range(result_count):                    
+                    # create a nested dict in it
+                    posts[result[loop][7]] = dict()
+                    # make a pointer (reference) of it for easier code reading
+                    cur_post = posts[result[loop][7]]
+
+                    # convert dates into strings
+                    # and change their microsecond to 0
+                    
+                    # posted_date
+                    result[loop][5] = str(result[loop][5].replace(microsecond=0))
+
+                    # check if last_modified is a valid date
+                    if bool(result[loop][6]) == True or result[loop][6] == None:
+                        # if it is not None, then it is a valid date
+                        # convert it into string then
+                        result[loop][6] = str(result[loop][6].replace(microsecond=0))
+
+                    else:
+                        # otherwise it must be a None or invalid value,
+                        # just call it None
+                        result[loop][6] = None
+
+                    # assign the post information to the nested dict's keys
+                    # post id
+                    cur_post['id'] = result[loop][0]
+                    # post string id
+                    cur_post['str_id'] = result[loop][1]
+                    # post title
+                    cur_post['title'] = result[loop][2]
+                    # post author
+                    cur_post['author'] = result[loop][3]
+                    # post content
+                    cur_post['content'] = result[loop][4]
+                    # post's posted date
+                    cur_post['posted_date'] = result[loop][5]
+                    # post's last modified date
+                    cur_post['last_modified'] = result[loop][6]
+
+                    # post modified attribute
+                    if result[loop][7] == 1:
+                        # if it is 1, means true
+                        cur_post['modified'] = True
+                    elif result[loop][7] == 0:
+                        # if it is 0, means false
+                        cur_post['modified'] = False
+                    else:
+                        # otherwise, it is None (Invalid value)
+                        cur_post['modified'] = None
+                    
+                    # if list index reached request amount, break the loop
+                    if loop == (amount-1):
+                        break
+
+            # if result is same or less than requested
+            elif result_count =< amount:
+                for x in result:
+                    # create a nested dict
+                    posts[x[7]] = dict()
+                    # make a pointer (reference) of it for easier code reading
+                    cur_post = posts[x[7]]
+
+                    # convert dates into string and
+                    # change their microsecond to 0 at the same time
+                    # posted_date
+                    x[5] = str(x[5].replace(microsecond=0))
+
+                    # check if last_modified is a valid datetime object
+                    if bool(x[6]) == True or x[6] != None:
+                        # if it is not None, then it is a valid date
+                        # convert it into string then
+                        x[6] = str(x[6].replace(microsecond=0))
+
+                    else:
+                        # otherwise it must be a None or invalid value,
+                        # just call it None
+                        x[6] = None
+
+                    # assign post information to the nested dict's keys
+                    # post id
+                    cur_post['id'] = x[0]
+                    # post string id
+                    cur_post['str_id'] = x[1]
+                    # post title
+                    cur_post['title'] = x[2]
+                    # post author
+                    cur_post['author'] = x[3]
+                    # post content
+                    cur_post['content'] = x[4]
+                    # post's posted date
+                    cur_post['posted_date'] = x[5]
+                    # post's last modified date
+                    cur_post['last_modified'] = x[6]
+
+                    # post modified attribute
+                    if x[7] == 1:
+                        # if it is 1, means true
+                        cur_post['modified'] = True
+                    elif x[7] == 0:
+                        # if is is 0, means false
+                        cur_post['modified'] = False
+                    else:
+                        # otherwise, it is a invalid value so we called it None
+                        cur_post['modified'] = None
+
+
+            if json:
+                # if json set to True, convert it into JSON string
+                posts_json = JSONEncoder(indent=4).encode(posts)
+                return posts_json
+
+            else:
+                # otherwise just return the dict
+                return posts
+
+        # if no result found, return None
+        else:
             return None
 
     
@@ -228,7 +487,14 @@ class PostManager:
         cursor = self.mysql_conn.cursor()
         if bool(friendly):
             cursor.execute("SELECT author FROM authors WHERE id={}".format(str(id)))
-            username = cursor.fetchone()
+            try:
+                username = cursor.fetchone()
+            
+            except sql.Exception.UnreadResultError:
+                # we will ignore unread results, because author id can't be duplicated
+                # it must be a developer/admins mistakes
+                pass
+
             # if result found, author's friendly name is returned
             if bool(username):
                 return username[0]
@@ -237,7 +503,13 @@ class PostManager:
                 return None
         else:
             cursor.execute("SELECT username FROM authors WHERE id={}".format(str(id)))
-            author = cursor.fetchone()
+            try:
+                author = cursor.fetchone()
+            
+            except sql.Exception.UnreadResultError:
+                # same as above, we ignore unread results
+                pass
+
             # return username if found
             if bool(author):
                 return author[0]
