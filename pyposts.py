@@ -75,7 +75,7 @@ class PostManager:
 
         # we will ignore unread results, since ids can't be duplicated,
         # it must be a developer/creator mistakes
-        except sql.Exception.UnreadResultError:
+        except sql.errors.InternalError:
             pass
 
         # when bool(content) == True, means value is found
@@ -121,7 +121,7 @@ class PostManager:
         
         # we will ignore unread results, since ids can't be duplicated,
         # it must be a developer/creator mistakes
-        except sql.Exception.UnreadResultError:
+        except sql.errors.InternalError:
             pass
 
         # if result is found, acquire post infos and store in dictionary
@@ -490,7 +490,7 @@ class PostManager:
             try:
                 username = cursor.fetchone()
             
-            except sql.Exception.UnreadResultError:
+            except sql.errors.InternalError:
                 # we will ignore unread results, because author id can't be duplicated
                 # it must be a developer/admins mistakes
                 pass
@@ -506,7 +506,7 @@ class PostManager:
             try:
                 author = cursor.fetchone()
             
-            except sql.Exception.UnreadResultError:
+            except sql.errors.InternalError:
                 # same as above, we ignore unread results
                 pass
 
