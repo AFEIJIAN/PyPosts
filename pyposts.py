@@ -236,7 +236,7 @@ class PostManager:
 					if bool(result[loop][5]) != False or result[loop][5] != None:
 						# if yes, just replace it's microsecond with 0 and
 						# convert it into string
-						cur_post['last_modified'] = str(result[loop][5].replace(microsecond=0)
+						cur_post['last_modified'] = str(result[loop][5].replace(microsecond=0))
 
 					else:
 						# otherwise, it must be None or other invalid value, just call None
