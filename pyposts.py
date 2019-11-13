@@ -210,18 +210,6 @@ class PostManager:
 
 				# assign post information to the nested dict's keys
 				for loop in range(result_count):
-					# convert date into string
-					# will change microsecond to 0 at the same time
-					result[loop][4] = str(result[loop][4].replace(microsecond=0))
-
-					# check if last_modified date is None or not
-					if bool(result[loop][5]) != True or result[loop][5] != None:
-						# if not means it is a valid date, convert it to string then
-						# will change microsecond to 0 at the same time
-						result[loop][5] = str(result[loop][5].replace(microsecond=0))
-					else:
-						# otherwise, change it's value into None
-						result[loop][5] = None
 
 					# create a nested dictionary
 					posts[result[loop][4]] = dict()
@@ -237,10 +225,22 @@ class PostManager:
 					cur_post['title'] = result[loop][2]
 					# post content
 					cur_post['content'] = result[loop][3]
+
 					# post's posted date
-					cur_post['posted_date'] = result[loop][4]
+					# convert it into string at the same time and replace microsecond with 0
+					cur_post['posted_date'] = str(result[loop][4].replace(microsecond=0))
+
 					# post's last modified date
-					cur_post['last_modified'] = result[loop][5]
+
+					# check if last_modified date is available or not
+					if bool(result[loop][5]) != False or result[loop][5] != None:
+						# if yes, just replace it's microsecond with 0 and
+						# convert it into string
+						cur_post['last_modified'] = str(result[loop][5].replace(microsecond=0)
+
+					else:
+						# otherwise, it must be None or other invalid value, just call None
+						cur_post['last_modified'] = None
 					# post author, represented by their ids
 					cur_post['author'] = result[loop][6]
 					# post modified attribute
@@ -263,14 +263,6 @@ class PostManager:
 			# elif result is equal to or less than requested
 			elif result_count <= amount:
 				for x in result:
-					# convert datetime object into string
-					# will change their microsecond to 0 at the same time
-					# posted_date
-					x[4] = str(x[4].replace(microsecond=0))
-					# checks if last_modified is None or a valid date
-					if bool(x[5]) == True or x[5] != None:
-						# if it is a valid date, convert it into a string
-						x[5] = str(x[5].replace(microsecond=0))
 
 
 					# create a nested dictionary
@@ -290,9 +282,20 @@ class PostManager:
 
 
 					# post's posted date
-					cur_post['posted_date'] = x[4]
+					# convert it into string at the same time and replace microsecond with 0
+					cur_post['posted_date'] = str(x[4].replace(microsecond=0))
+
 					# post's last modified date
-					cur_post['last_modified'] = x[5]
+					# check if last_modified date is available
+					if bool(x[5]) != False or x[5] != None:
+						# if yes, just replace it's microsecond with 0 and
+						# convert it into string
+						cur_post['last_modified'] = str(x[5].replace(microsecond=0))
+
+					else:
+						# otherwise, just call it None
+						cur_post['last_modified'] = None
+
 					# post author
 					cur_post['author'] = x[6]
 					# post modified attribute (True or False)
@@ -370,23 +373,6 @@ class PostManager:
 					# make a pointer (reference) of it for easier code reading
 					cur_post = posts[result[loop][7]]
 
-					# convert dates into strings
-					# and change their microsecond to 0
-					
-					# posted_date
-					result[loop][5] = str(result[loop][5].replace(microsecond=0))
-
-					# check if last_modified is a valid date
-					if bool(result[loop][6]) == True or result[loop][6] == None:
-						# if it is not None, then it is a valid date
-						# convert it into string then
-						result[loop][6] = str(result[loop][6].replace(microsecond=0))
-
-					else:
-						# otherwise it must be a None or invalid value,
-						# just call it None
-						result[loop][6] = None
-
 					# assign the post information to the nested dict's keys
 					# post id
 					cur_post['id'] = result[loop][0]
@@ -398,15 +384,27 @@ class PostManager:
 					cur_post['author'] = result[loop][3]
 					# post content
 					cur_post['content'] = result[loop][4]
+
 					# post's posted date
-					cur_post['posted_date'] = result[loop][5]
+					# convert it into string at the same time and replace microsecond with 0
+					cur_post['posted_date'] = str(result[loop][5].replace(microsecond=0))
+
 					# post's last modified date
-					cur_post['last_modified'] = result[loop][6]
+					# check if last_modified date is available
+					if bool(result[loop][6]) != False or result[loop][6] != None:
+						# if yes, just replace it's microsecond with 0 and
+						# convert it into string
+						cur_post['last_modified'] = str(result[loop][6].replace(microsecond=0))
+					
+					else:
+						# otherwise, just call it None
+						cur_post['last_modified'] = None
 
 					# post modified attribute
 					if result[loop][7] == 1:
 						# if it is 1, means true
 						cur_post['modified'] = True
+
 					elif result[loop][7] == 0:
 						# if it is 0, means false
 						cur_post['modified'] = False
@@ -415,6 +413,7 @@ class PostManager:
 						cur_post['modified'] = None
 					
 					# if list index reached request amount, break the loop
+					# amount-1 because index starts from 0
 					if loop == (amount-1):
 						break
 
@@ -425,22 +424,6 @@ class PostManager:
 					posts[x[7]] = dict()
 					# make a pointer (reference) of it for easier code reading
 					cur_post = posts[x[7]]
-
-					# convert dates into string and
-					# change their microsecond to 0 at the same time
-					# posted_date
-					x[5] = str(x[5].replace(microsecond=0))
-
-					# check if last_modified is a valid datetime object
-					if bool(x[6]) == True or x[6] != None:
-						# if it is not None, then it is a valid date
-						# convert it into string then
-						x[6] = str(x[6].replace(microsecond=0))
-
-					else:
-						# otherwise it must be a None or invalid value,
-						# just call it None
-						x[6] = None
 
 					# assign post information to the nested dict's keys
 					# post id
@@ -453,10 +436,22 @@ class PostManager:
 					cur_post['author'] = x[3]
 					# post content
 					cur_post['content'] = x[4]
+
 					# post's posted date
-					cur_post['posted_date'] = x[5]
+					# convert it into string at the same time and replace microsecond with 0
+					cur_post['posted_date'] = str(x[5].replace(microsecond=0))
+
+
 					# post's last modified date
-					cur_post['last_modified'] = x[6]
+					# check if last_modified is available
+					if bool(x[6]) != False or x[6] != None:
+						# if yes, just replace it's microsecond with 0 and
+						# convert it into string
+						cur_post['last_modified'] = str(x[6].replace(microsecond=0))
+
+					else:
+						# otherwise, just called it None
+						cur_post['last_modified'] = None
 
 					# post modified attribute
 					if x[7] == 1:
