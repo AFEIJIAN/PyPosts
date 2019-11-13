@@ -193,7 +193,7 @@ class PostManager:
 		# convert Python's datetime into string form (which is compatible with MySQL DATETIME)
 		# and change it's microsecond to 0
 		date = str(date.replace(microsecond=0))
-		cursor.execute("SELECT id,str_id,title,content,posted_date,last_modified,author,modified FROM posts WHERE posted_date <= {}".format(date))
+		cursor.execute("SELECT id,str_id,title,content,posted_date,last_modified,author,modified FROM posts WHERE posted_date <= '{}'".format(date))
 		# fetch result
 		result = cursor.fetchall()
 		
