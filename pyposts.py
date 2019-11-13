@@ -810,28 +810,28 @@ class PostManager:
 	Before PostManager can be used, MySQL Server Host's Info must be provided via
 
 	mysql_host = Host of MySQL server
-	mysql_port = Port of MySQL Server
+	mysql_port = Port of MySQL Server, it should be int, we will convert it into int in case
+					it is string
 	mysql_user = User for the database of the MySQL Server
 	mysql_passwd = Password of the MySQL User
 	mysql_db = Name of the MySQL Database
 	"""
 	def __init__(self, mysql_host, mysql_port, mysql_user, mysql_passwd, mysql_db):
-		self.mysql_host = mysql_host
+		# check if mysql server port is provided,
+		# when mysql_port has value, bool() will return True
+		# if yes we will convert it into int, in case developer provide string
 		if bool(mysql_port):
-			self.mysql_port = int(mysql_port)
+			mysql_port = int(mysql_port)
 
+		# if no we will use the default port, which is 3306
 		else:
-			self.mysql_port = 3306
+			mysql_port = 3306
 
-		self.mysql_user = mysql_user
-		# vulnerable, see #6
-		self.mysql_passwd = mysql_passwd
-		self.mysql_db = mysql_db
-		self.mysql_conn = sql.connect(host=self.mysql_host,
-								 port=self.mysql_port,
-								 user=self.mysql_user,
-								 passwd=self.mysql_passwd,
-								 database=self.mysql_db)
+		self.mysql_conn = sql.connect(host=mysql_host,
+								 port=mysql_port,
+								 user=mysql_user,
+								 passwd=mysql_passwd,
+								 database=mysql_db)
 	
 	"""
 	method close, close the PostManager
