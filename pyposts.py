@@ -211,10 +211,14 @@ class PostManager:
 				# assign post information to the nested dict's keys
 				for loop in range(result_count):
 
+					# create a variable to store converted datetime string
+					# because tuple doesn't suppport assignment
+					new_posted_date = str(result[loop][4].replace(microsecond=0))
+
 					# create a nested dictionary
-					posts[result[loop][4]] = dict()
+					posts[new_posted_date] = dict()
 					# make a pointer (reference) of the nested dictionary for easier code reading
-					cur_post = posts[result[loop][4]]
+					cur_post = posts[new_posted_date]
 
 					# assign post information to the nested dict's keys
 					# post id
@@ -227,8 +231,7 @@ class PostManager:
 					cur_post['content'] = result[loop][3]
 
 					# post's posted date
-					# convert it into string at the same time and replace microsecond with 0
-					cur_post['posted_date'] = str(result[loop][4].replace(microsecond=0))
+					cur_post['posted_date'] = new_posted_date
 
 					# post's last modified date
 
@@ -264,11 +267,14 @@ class PostManager:
 			elif result_count <= amount:
 				for x in result:
 
+					# create a variable to store converted datetime string,
+					# because tuple doesn't support assignment
+					new_posted_date = str(x[4].replace(microsecond=0))
 
 					# create a nested dictionary
-					posts[x[4]] = dict()
+					posts[new_posted_date] = dict()
 					# make a pointer (reference) of the current nested dictionary
-					cur_post = posts[x[4]]
+					cur_post = posts[new_posted_date]
 
 					# assign post information to the nested dict's keys
 					# post id
@@ -367,11 +373,16 @@ class PostManager:
 			# create a dict to store posts
 			posts = dict()
 			if result_count > amount:
-				for loop in range(result_count):                    
+				for loop in range(result_count):
+
+					# create a variable to store converted datetime (last_modified date) string
+					# because tuple doesn't support assignment
+					last_modified_date = str(result[loop][6].replace(microsecond=0))
+
 					# create a nested dict in it
-					posts[result[loop][7]] = dict()
+					posts[last_modified_date] = dict()
 					# make a pointer (reference) of it for easier code reading
-					cur_post = posts[result[loop][7]]
+					cur_post = posts[last_modified_date]
 
 					# assign the post information to the nested dict's keys
 					# post id
@@ -390,15 +401,10 @@ class PostManager:
 					cur_post['posted_date'] = str(result[loop][5].replace(microsecond=0))
 
 					# post's last modified date
-					# check if last_modified date is available
-					if bool(result[loop][6]) != False or result[loop][6] != None:
-						# if yes, just replace it's microsecond with 0 and
-						# convert it into string
-						cur_post['last_modified'] = str(result[loop][6].replace(microsecond=0))
+					# don't need to check if it is available
+					# modified_date must available when result is found
+					cur_post['last_modified'] = last_modified_date
 					
-					else:
-						# otherwise, just call it None
-						cur_post['last_modified'] = None
 
 					# post modified attribute
 					if result[loop][7] == 1:
@@ -420,10 +426,15 @@ class PostManager:
 			# if result is same or less than requested
 			elif result_count <= amount:
 				for x in result:
+
+					# create a variable to store converted datetime (last_modified date) string
+					# because tuple doesn't support assignment
+					last_modified_date = str(x[7].replace(microsecond=0))
+
 					# create a nested dict
-					posts[x[7]] = dict()
+					posts[last_modified_date] = dict()
 					# make a pointer (reference) of it for easier code reading
-					cur_post = posts[x[7]]
+					cur_post = posts[last_modified_date]
 
 					# assign post information to the nested dict's keys
 					# post id
@@ -443,15 +454,9 @@ class PostManager:
 
 
 					# post's last modified date
-					# check if last_modified is available
-					if bool(x[6]) != False or x[6] != None:
-						# if yes, just replace it's microsecond with 0 and
-						# convert it into string
-						cur_post['last_modified'] = str(x[6].replace(microsecond=0))
-
-					else:
-						# otherwise, just called it None
-						cur_post['last_modified'] = None
+					# don't need to check if it is available
+					# modified_date must available when result is found
+					cur_post['last_modified'] = last_modified_date
 
 					# post modified attribute
 					if x[7] == 1:
