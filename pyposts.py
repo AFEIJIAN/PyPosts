@@ -429,7 +429,7 @@ class PostManager:
 
 					# create a variable to store converted datetime (last_modified date) string
 					# because tuple doesn't support assignment
-					last_modified_date = str(x[7].replace(microsecond=0))
+					last_modified_date = str(x[6].replace(microsecond=0))
 
 					# create a nested dict
 					posts[last_modified_date] = dict()
