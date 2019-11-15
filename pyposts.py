@@ -61,18 +61,55 @@ class PostManager:
 	method GetPostInfoById
 
 	Find post content according to the type and ID provided
-	id = The Post ID
+	id = The Post ID or String ID,
+		in int if Post ID or
+		in string if String ID
+
 	Type = The requested content type, there are four types:
 		1. title
 		2. author (The ID of the post author)
 		3. posted_date (Date of the post posted, see below for more info)
 		4. content (The post's content)
+		5. str_id (The Post String ID)
+		6. id (The Post ID)
+
+	use_str = Use String ID for post lookup, set True if yes, otherwise set False,
+				default is False
 
 		for date, please refer to the comments on line 43 - line 50
 	"""
-	def GetPostInfoById(self, id, Type):
+	def GetPostInfoById(self, id, Type, use_str=False):
+		# list of valid post info types
+		valid_type = ['title','author','posted_date','content','str_id','id']
+
+		# data type and value checks
+
+		# raise TypeError if invalid data type is found
+		# raise ValueError if invalid value is found
+		if use_str:
+			if isinstance(id, str) != True:
+				raise TypeError("Post String ID must be a string.")
+			
+		else:
+			if isinstance(id, int) != True:
+				raise TypeError("Post ID must be an integer.")
+		
+		if isinstance(Type, str) != True:
+			raise TypeError("Post Info Type must be a string.")
+		
+		else:
+			if Type not in valid_type:
+				raise ValueError("Invalid Post Info Type, acceptable are {}".format(str(valid_type)))
+
+		# create a buffered cursor
 		cursor = self.mysql_conn.cursor(buffered=True)
-		cursor.execute("SELECT {} FROM posts WHERE id={}".format(Type, str(id)))
+
+		# execute query
+		# check if String ID is used for post lookup
+		if use_str:
+			cursor.execute("SELECT {} FROM posts WHERE str_id='{}'".format(Type, id))
+		else:
+			cursor.execute("SELECT {} FROM posts WHERE id={}".format(Type, id))
 		
 		content = cursor.fetchone()
 
@@ -100,12 +137,18 @@ class PostManager:
 	"""
 	method GetPostById
 
-	Find post according to the ID provided
+	Find post according to the Post ID or String ID provided
 
-	id = the post ID
+	id = the Post ID or String ID
+		in integer if Post ID, or
+		in string if String ID
+
 	json =  1. If json is False, then a python dictionary is returned
 				but if json is True, then a encoded JSON is returned
 			2. Default is False
+	
+	use_str = Use String ID for post lookup, set True if yes, otherwise set False,
+				default is False
 	
 	Python dictionary or JSON will be returned with values below:
 	1. title (The post's title)
@@ -114,11 +157,31 @@ class PostManager:
 	3. last_modified (The last day of the post modified)
 	4. author (The ID of the post's author)
 	5. modified (does the post was modified? true or false only)
-	6. id (Post id)
+	6. id (Post ID)
+	7. str_id (Post String ID)
 	"""
-	def GetPostById(self, id, json=False):
+	def GetPostById(self, id, use_str=False, json=False):
+		# data type checks
+		# raise TypeError if invalid data type is found
+		if use_str:
+			if isinstance(id, str) != True:
+				raise TypeError("Post String ID must be a string.")
+
+		else:
+			if isinstance(id, int) != True:
+				raise TypeError("Post ID must be a integer.")
+
+		# create a buffered cursor
 		cursor = self.mysql_conn.cursor(buffered=True)
-		cursor.execute("SELECT str_id,title,content,posted_date,last_modified,author,modified FROM posts WHERE id={}".format(str(id)))
+
+		# execute query
+		# check if String ID is used for post lookup
+		if use_str:
+			cursor.execute("SELECT str_id,title,content,posted_date,last_modified,author,modified FROM posts WHERE str_id='{}'".format(id))
+
+		else:
+			cursor.execute("SELECT str_id,title,content,posted_date,last_modified,author,modified FROM posts WHERE id={}".format(id))
+
 		# fetch result
 		result = cursor.fetchone()
 		
