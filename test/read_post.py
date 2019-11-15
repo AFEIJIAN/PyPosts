@@ -195,7 +195,7 @@ def insert(mysql_info):
 	sleep(1)
 	print("Creating a PostManager object...")
 	# create a PostManager object
-	pm = pyposts.PostManager(
+	pm = py.PostManager(
 		mysql_info['host'],
 		mysql_info['port'],
 		mysql_info['user'],
