@@ -201,7 +201,15 @@ class PostManager:
 			# posted date, will change microsecond to 0 at the same time
 			post['posted_date'] = str(result[3].replace(microsecond=0))
 			# last modified date
-			post['last_modified'] = result[4]
+			# check if last_modified date is available
+			# we use "1000-01-01" as representation of NULL in MySQL
+			if bool(result[4]) != True or result[4] != None or result[4] != dt(1000,1,1):
+				# if yes, convert it into string and replace microsecond with 0
+				post['last_modified'] = str(result[4].replace(microsecond=0))
+			
+			else:
+				# otherwise just call it None
+				post['last_modified'] = None
 			# post author
 			post['author'] = result[5]
 			# does post modified?, only return 0 or 1
@@ -256,7 +264,7 @@ class PostManager:
 		# convert Python's datetime into string form (which is compatible with MySQL DATETIME)
 		# and change it's microsecond to 0
 		date = str(date.replace(microsecond=0))
-		cursor.execute("SELECT id,str_id,title,content,posted_date,last_modified,author,modified FROM posts WHERE posted_date <= '{}'".format(date))
+		cursor.execute("SELECT id,str_id,title,content,posted_date,last_modified,author,modified FROM posts WHERE posted_date <= '{}' AND modified_date != '1000-01-01'".format(date))
 		# fetch result
 		result = cursor.fetchall()
 		
@@ -299,7 +307,8 @@ class PostManager:
 					# post's last modified date
 
 					# check if last_modified date is available or not
-					if bool(result[loop][5]) != False or result[loop][5] != None:
+					# we use 1000-01-01 as representation of NULL in MySQL
+					if bool(result[loop][5]) != False or result[loop][5] != None or result[loop][5] != dt(1000,1,1):
 						# if yes, just replace it's microsecond with 0 and
 						# convert it into string
 						cur_post['last_modified'] = str(result[loop][5].replace(microsecond=0))
@@ -356,7 +365,8 @@ class PostManager:
 
 					# post's last modified date
 					# check if last_modified date is available
-					if bool(x[5]) != False or x[5] != None:
+					# we use 1000-01-01 as representation of NULL in MySQL
+					if bool(x[5]) != False or x[5] != None or x[5] != dt(1000,1,1):
 						# if yes, just replace it's microsecond with 0 and
 						# convert it into string
 						cur_post['last_modified'] = str(x[5].replace(microsecond=0))
@@ -424,7 +434,7 @@ class PostManager:
 		# replace microsecond to 0 and change date object into string
 		date = str(date.replace(microsecond=0))
 		# execute query
-		cursor.execute("SELECT id,str_id,title,author,content,posted_date,last_modified,modified FROM posts WHERE last_modified <= '{}'".format(date))
+		cursor.execute("SELECT id,str_id,title,author,content,posted_date,last_modified,modified FROM posts WHERE last_modified <= '{}' AND last_modified != '1000-01-01'".format(date))
 
 		# fetch all result
 		result = cursor.fetchall()
@@ -571,7 +581,7 @@ class PostManager:
 
 	post_id = Defined by framework itself
 	posted_date = use the datetime when this function being called
-	last_modified = None
+	last_modified = "1000-01-01" (representation of 'NULL' in MySQL)
 	modified = 0 (represent False in MySQL)
 
 	when post is saved successfully, a post id will be returned
@@ -626,7 +636,9 @@ class PostManager:
 			# posted_date will use current date and time
 			# with microsecond changed into 0
 			str(dt.now().replace(microsecond=0)),
-			"NULL",
+			# MySQL doesn't support NULL in datetime,
+			# we will use "1000-01-01"
+			"1000-01-01",
 			0,
 			content
 		))
@@ -716,7 +728,9 @@ class PostManager:
 			post['title'],
 			# use current date and time with microsecond changed to 0
 			str(dt.now().replace(microsecond=0)),
-			"NULL",
+			# MySQL doesn't support NULL in datetime,
+			# we will use "1000-01-01"
+			"1000-01-01",
 			0,
 			post['content']
 		))
