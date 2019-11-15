@@ -588,17 +588,26 @@ class PostManager:
 	1. title - Post's title, must be string
 	2. str_id - Post's String ID, must be string
 	3. content - Post's content, must be string
-	4. author - Post's author ID, must be integer
+	4. author_id - Post's author ID, must be integer
 
 	example of JSON string acquired by calling GetPostById(json=True),
 	(with auto assigned values removed):
 
+	Note: property names must use what we defined above, otherwise error
+			will be raised due to not enough information
+
 	{
 		"title": "My First Posts!",
-		"str_id": null,
+		"str_id": "my_first_post",
 		"content": "My New Post stored in PyPosts framework!",
-		"author": 1
+		"author_id": 1
 	}
+
+	To summarize,
+	
+	It will be an object in JavaScript,
+	where object attributes(property name) are post info type name
+
 
 	If post saved successfully, a post id will be returned
 	* Post ID calculate method will same as method above, 'AddPost()'
@@ -673,7 +682,7 @@ class PostManager:
 	1. title - the post's title
 	2. content - the post's content
 	3. author - the post's author ID
-	4. str_id - the post's string ID
+	4. str_id - the post's new string ID
 
 	value = The value used to update the post's info
 
@@ -681,7 +690,7 @@ class PostManager:
 	which might lead to posts lookup error in the future
 
 	This function only update each post's info on each call, to update multiple,
-	use UpdatePost() or UpdatePostByJSON() (See below)
+	either call multiple times otherwise use UpdatePost() or UpdatePostByJSON() (See below)
 
 	If no error occurs, this function will return 1 upon completion
 	"""
@@ -762,6 +771,235 @@ class PostManager:
 		return 1
 
 	
+
+	"""
+	method UpdatePost
+
+	Update the whole post referred by post ID or String ID
+	using the arguments provided
+
+	## Value provided below will only used for referring post
+	id = Post ID or String ID used for post reference, in int if Post ID, or in string if String ID
+	use_str = Use String ID for post reference, set True to use, otherwise set False,
+				default is False
+
+	## Value provided below will be used for update post
+	author_id = Post Author ID, in int
+	title = Post Title, in string
+	content = Post Content, in string
+	str_id = Post's New String ID, in string
+
+	## Value Can't be Changed
+	1. posted_date
+	
+	## Value we will change during this function call
+	1. last_modified = last modified date, we will use current datetime
+	2. modified = modified attribute, change to 1
+
+	If no error occurs, 1 will be returned upon completion
+
+	"""
+	def UpdatePost(self, id, author_id, title, content, str_id, use_str=False):
+		# data type checks
+		# if not using required data type, TypeError will be raised
+		if use_str:
+			if isinstance(id, str) != True:
+				raise TypeError("Post String ID must be a string.")
+		else:
+			if isinstance(id, int) != True:
+				raise TypeError("Post ID must be an integer.")
+		
+		if isinstance(author, int) != True:
+			raise TypeError("Post Author ID must be an integer.")
+		
+		if isinstance(title, str) != True:
+			raise TypeError("Post Title must be a string.")
+		
+		if isinstance(content, str) != True:
+			raise TypeError("Post Content must be a string.")
+		
+		if isinstance(str_id, str) != True:
+			raise TypeError("New Post String ID must be a string.")
+
+		# create a buffered cursor
+		cursor = self.mysql_conn.cursor(buffered=True)
+
+		# check if string ID is used for post reference
+		if use_str:
+			# execute query with str_id as reference
+			cursor.execute("UPDATE posts SET author={} AND title='{}' AND content='{}' AND str_id='{}' WHERE str_id='{}'".format(
+				author_id,
+				title,
+				content,
+				str_id,
+				id
+			))
+		else:
+			cursor.execute("UPDATE posts SET author={} AND title='{}' AND content='{}' AND str_id='{}' WHERE id={}".format(
+				author_id,
+				title,
+				content,
+				str_id,
+				id
+			))
+		
+		# commit user updated result
+		self.mysql_conn.commit()
+
+		# now update the post with last_modified date and modified attribute
+		if use_str:
+			# in case user changed their String ID, we will use it for post reference
+			cursor.execute("UPDATE posts SET modified=1 AND last_modified='{}' WHERE str_id='{}'".format(
+				str(dt.now().replace(microsecond=0)),
+				str_id
+			))
+		else:
+			cursor.execute("UPDATE posts SET modified=1 AND last_modified='{}' WHERE id={}".format(
+				str(dt.now().replace(microsecond=0)),
+				id
+			))
+		
+		# now commit our changes
+		self.mysql_conn.commit()
+
+		# close the cursor the clear it's buffer
+		cursor.close()
+
+		# return 1 upon completion
+		return 1
+	
+	"""
+	method UpdatePostByJSON
+
+	Update the whole specific post referred by post ID or string ID
+	using the json string provided
+
+	json_str = The JSON string containing the whole post info, in string.
+				Also, please include Post ID or String ID in it which will be used for reference
+
+	use_str = Use String ID for post reference, set True to use, otherwise set False,
+				default is False
+
+	(property_name = It's definition)
+
+	# value used for post reference
+	1. id = Post ID or Post String ID. in int if Post ID or in string if String ID
+
+	# value used for post update
+	1. author_id = Post Author ID
+	2. title = Post Title
+	3. content = Post Content
+	4. str_id = Post's New String ID
+
+	# value can't be updated
+	1. posted_date = Posted Date
+
+	# value updated automatically during this function call
+	1. last_modified = Last Modified date, we will use current datetime
+	2. modified = Modified attribute, we will change it into 1 (True)
+
+	Note: property names must use what we defined above, otherwise error
+			will be raised due to not enough information
+	
+	Example of JSON string might look like this:
+
+	{
+		"title": "My First Posts!",
+		"str_id": "my_first_post",
+		"content": "My New Post stored in PyPosts framework!",
+		"author_id": 1
+	}
+
+	To summarize,
+
+	It will be an object in JavaScript,
+	where object attributes(property name) are post info type name
+
+	If no error occurs, 1 will be returned upon completion
+
+	"""
+	def UpdatePostByJSON(self, json_str, use_str=False):
+		# data type check
+		# raise TypeError if invalid data type is found
+		if isinstance(json_str, str) != True:
+			raise TypeError("JSON String must be a string.")
+
+		# create a buffered cursor
+		cursor = self.mysql_conn.cursor(buffered=True)
+
+		# decode JSON string into python dict
+		post = JSONDecoder().decode(json_str)
+
+		# data type check for decoded post info
+		if use_str:
+			if isinstance(post['id'], str) != True:
+				raise TypeError("Post String ID must be a string.")
+		else:
+			if isinstance(post['id'], str) != True:
+				raise TypeError("Post ID must be an integer.")
+
+		if isinstance(post['str_id'], str) != True:
+			raise TypeError("Post New String ID must be a string.")
+		
+		if isinstance(post['title'], str) != True:
+			raise TypeError("Post Title must be a string.")
+		
+		if isinstance(post['content'], str) != True:
+			raise TypeError("Post Content must be a string.")
+		
+		if isinstance(post['author_id'], int) != True:
+			raise TypeError("Post Author ID must be an integer.")
+
+		# execute query
+		# check if user want String ID used for post reference
+		if use_str:
+			cursor.execute("UPDATE posts SET str_id='{}' AND title='{}' AND content='{}' AND author={} WHERE str_id='{}'".format(
+				post['str_id'],
+				post['title'],
+				post['content'],
+				post['author_id'],
+				post['id']
+			))
+		
+		else:
+			cursor.execute("UPDATE posts SET str_id='{}' AND title='{}' AND content='{}' AND author={} WHERE id={}".format(
+				post['str_id'],
+				post['title'],
+				post['content'],
+				post['author_id'],
+				post['id']
+			))
+		
+		# commit user changes
+		self.mysql_conn.commit()
+
+		# now we mark the post as modified
+		# check if user want String ID used for post reference
+		if use_str:
+			# in case user changed the post String ID, we will use latest value
+			cursor.execute("UPDATE posts SET modified=1 AND last_modified='{}' WHERE str_id='{}'".format(
+				str(dt.now().replace(microsecond=0)),
+				post['str_id']
+			))
+		
+		else:
+			cursor.execute("UPDATE posts SET modified=1 AND last_modified='{}' WHERE id={}".format(
+				str(dt.now().replace(microsecond=0)),
+				post['id']
+			))
+		
+		# now commit our changes
+		self.mysql_conn.commit()
+
+		# close the cursor to clear it's buffer
+		cursor.close()
+
+		# return 1 upon completion
+		return 1
+
+	
+
+
 	"""
 	method GetAuthorById
 
