@@ -1,84 +1,275 @@
-from pyposts import PostManager
-from mysql import connector as sql
+# automated test script for pyposts framework
 
-def prepare():
-    return {'post_content':"My New Post stored in PyPosts framework!",
-            'post_title':'My First Posts!',
-            'post_id':1,
-            'posted_date':'2019-08-04 12:41:00',
-            'last_modified':'NULL',
-            'author':1,
-            'modified':0}
+# import required library
+import pyposts as py
+# import getpass for hidden password input
+from getpass import getpass
+# for delaying
+from time import sleep
+# used for decode post into dict for verification
+from json import JSONDecoder
+# datetime object to create datetime object
+from datetime import datetime as dt
+# wonderful exit upon completion
+from sys import exit
 
-def insert(post):
-    # according to issue #8 , this script will prompt for MySQL Server details
-    conn = sql.connect(host='127.0.0.1', port=3306, user='py', passwd='py1234', database='pyposts')
-    cur = conn.cursor()
-    cur.execute("INSERT INTO posts (title,content,posted_date,last_modified,author,modified,id) VALUES ('{}','{}','{}',{},{},{},{})".format(post['post_title'],post['post_content'],post['posted_date'],post['last_modified'],post['author'],post['modified'],post['post_id']))
-    conn.commit()
-    conn.close()
+"""
+function verify_single
 
-def get_post():
-    # according to issue #8 , this script will prompt for MySQL Server details
-    pm = PostManager('127.0.0.1',3306,'py','py1234','pyposts')
-    # according to issue #8, output must be user-friendly
-    # testing: pm.GetPostById
-    print("Testing: pm.GetPostById without json.")
-    result = pm.GetPostById(1)
-    if bool(result):
-        for x,y in result.items():
-            print(x+' : '+str(y))
-    else:
-        print("Result is None.")
-        # according to issue #8, output must be user-friendly
-    print("Testing: pm.GetPostById with json.")
-    result = pm.GetPostById(1,json=True)
-    if bool(result):
-        print(result)
-    else:
-        print("Result is None.")
+Verify if src post info,
+is same with exp post info
 
-def get_post_id(id):
-    # according to issue #8 , this script will prompt for MySQL Server details
-    pm = PostManager('127.0.0.1',3306,'py','py1234','pyposts')
-    # Testing: pm.GetPostInfoById
-    Type = ['title','author','posted_date','content']
-    for x in Type:
-        print()
-        # according to issue #8, output must be user-friendly
-        print("Testing: pm.GetPostInfoById with Type = "+x)
-        result = pm.GetPostInfoById(id, x)
-        print()
-        print(result)
-        print()
+src = The source post info
+exp = Expected post info
 
-def insert_author():
-    # according to issue #8 , this script will prompt for MySQL Server details
-    conn = sql.connect(host='127.0.0.1', port=3306, user='py', passwd='py1234', database='pyposts')
-    cur = conn.cursor()
-    cur.execute("INSERT INTO authors (author,id,username) VALUES ('test',1,'test')")
-    conn.commit()
-    conn.close()
+designed to reduce lines of code on other function
 
-def get_author():
-    # according to issue #8 , this script will prompt for MySQL Server details
-    pm = PostManager('127.0.0.1',3306,'py','py1234','pyposts')
-    # according to issue #8, output must be user-friendly
-    print("Testing pm.GetAuthorNameById with friendly=True")
-    result = pm.GetAuthorNameById(1,friendly=True)
-    print(result)
-    # according to issue #8, output must be user-friendly
-    print("Testing pm.GetAuthorNameById with friendly=False")
-    result = pm.GetAuthorNameById(1,friendly=False)
-    print(result)
+return 1 if same, return -1 if not
+"""
+def verify_single(src, exp):
+	if src == exp:
+		return 1
+	else:
+		return -1
 
-### Post Section Test ###
-post = prepare()
-insert(post)
-#get_post()
-get_post_id(1)
+"""
+function verify
+
+Verify if post src is same as exp
+
+src = The source used to verification, must be a dict
+exp = Expected result, must be a dict
+
+if same, 1 will be return
+otherwise, -1 will be return
+"""
+def verify(src, exp):
+	# dict key names used for verifications
+	types = ['str_id','author','title','content']
+	for x in types:
+		if src[x] != exp[x]:
+			break
+			return -1
+	# if everything same, it will reach here
+	return 1
+
+"""
+function read
+
+Use all Post Reading API from PyPosts to read (acquire) post
+
+pm = The PostManager object created from function insert()
+pid = The Post ID
+"""
+def read(pm, pid):
+	# post used for verification
+	postv = dict(
+		str_id="demo_post",
+		author=1,
+		title="A demo post!",
+		content="Hooray! A demo post!"
+	)
+	print("There are 4 API for Post Reading, we only test 3 of it, we will test one by one.")
+	print("Another API will be tested in write_post.py")
+	sleep(1)
+	print("Testing 1 of 3: GetPostById")
+	print("Using Post ID for reference...")
+	# use Post ID for reference
+	post = pm.GetPostById(id=pid, use_str=False, json=False)
+	# verify result
+	result = verify(post, postv)
+	# if no error found, it will bypass statements
+	if result == -1:
+		print("Something error in here, exiting...")
+	
+	# test using String ID
+	print("Using Post String ID for reference...")
+	post = pm.GetPostById(id="demo_post", use_str=True, json=False)
+	# verify
+	result = verify(post, postv)
+	if result == -1:
+		print("Something error in here, exiting...")
+	
+	# use Post ID for reference but request for JSON string as result
+	print("Using Post ID for reference but acquiring JSON string this time...")
+	post = pm.GetPostById(id=pid, use_str=False, json=True)
+	# verify, decode post from JSON into dict first
+	result = verify(
+		JSONDecoder().decode(post),
+		postv
+	)
+	if result == -1:
+		print("Something error in here, exiting...")
+	
+	# use Post String ID for reference but request for JSON string as result
+	print("Using Post String ID for reference but acquiring JSON string this time...")
+	post = pm.GetPostById(id="demo_post", use_str=True, json=True)
+	# verify, decode post first
+	result = verify(
+		JSONDecoder().decode(post),
+		postv
+	)
+	if result == -1:
+		print("Something error in here, exiting...")
+	
+	# proceeding to second test
+	# types of post information to be acquired
+	test_types = ['title', 'author', 'posted_date', 'content', 'str_id', 'id']
+	print("Testing 2 of 3: GetPostInfoById")
+	for types in test_types:
+		if types == "posted_date":
+			print("posted_date doesn't have value for verification, since it use the datetime when you insert the post.")
+			print("As long as result appear, it's considered as successful.")
+		print("Acquiring {} from database...".format(types))
+		print("Using Post ID as reference")
+		if types != "posted_date" or types != "id":
+			post = pm.GetPostInfoById(pid, types, use_str=False)
+			result = verify_single(post, postv[types])
+			if result == -1:
+				print("Something error in here, exiting...")
+		
+		if types == "id":
+			if result != pid:
+				print("Something error in here, exiting...")
+		
+		# store posted_date for post reading
+		if types == "posted_date":
+			posted_date = result
+		
+
+	print("Using Post String ID for reference...")
+	for types in test_types:
+		print("Acquiring {} from database...".format(types))
+		if types != "posted_date" or types != "id":
+			post = pm.GetPostInfoById("demo_post", types, use_str=True)
+			result = verify_single(post, postv[types])
+			if result == -1:
+				print("Something error in here, exiting...")
+	
+	print("Testing 3 of 3: GetPostByPostedDate")
+	# convert datetime into string first
+	posted_date = dt.strptime(posted_date, "%Y-%m-%d %H:%M:%S")
+	# acquire post, since we only used 1 demo post for testing
+	# therefore amount of post is limited to 1
+	print("Using posted_date acquired before")
+	# testing without json
+	post = pm.GetPostByPostedDate(posted_date, 1, json=False)
+	# verify result
+	result = verify(post, postv)
+	print("Using same posted_date but request JSON String as output this time...")
+	post = pm.GetPostByPostedDate(posted_date, 1, json=True)
+	# verify result, but decode JSON string first
+	result = verify(
+		JSONDecoder().decode(post),
+		postv
+	)
+	if result == -1:
+		print("Something error in here, exiting...")
+	
+	print("Testing performed successful! No errors were found! Proceeding to demo post removal...")
+
+	# remove demo post from database
+	result = pm.RemovePostById(pid)
+
+	if result == 1:
+		print("Post removed successfully! Closing the PostManager object...")
+
+	# close the PostManager
+	pm.close()
+
+	print("Everything is OK! Bye!")
+	exit()
+	
 
 
-### Author Section Test ###
-#insert_author()
-#get_author()
+"""
+function insert
+
+Use API AddPost from PyPosts.PostManager to insert post
+and call read() after this
+
+mysql_info = The dict containing the MySQL server and database info
+"""
+def insert(mysql_info):
+	print("We are going to insert a post into the database you provided us.")
+	sleep(1)
+	print("Creating a PostManager object...")
+	# create a PostManager object
+	pm = pyposts.PostManager(
+		mysql_info['host'],
+		mysql_info['port'],
+		mysql_info['user'],
+		mysql_info['passwd'],
+		mysql_info['db']
+	)
+	print("Inserting...")
+	result = pm.AddPost(
+		str_id="demo_post",
+		author=1,
+		title="A demo post!",
+		content="Hooray! A demo post!"
+		)
+	if isinstance(result, int):
+		print("Inserting completed! Proceeding to reading test!")
+	
+	read(pm, result)
+
+
+"""
+function prompt_mysql
+
+Prompt user for MySQL server and database information
+and call insert() after this
+
+"""
+def prompt_mysql():
+	print("Regarding server host, we default to localhost (127.0.0.1), because remote server isn't supported.")
+	host = '127.0.0.1'
+	# ask user for mysql server port number
+	port = input("MySQL Server Port, default is 3306: ")
+	if bool(port):
+		# if user provided port, we will convert to int
+		port = int(port)
+	else:
+		# otherwise, we will provide them
+		port = 3306
+	# ask for database username
+	user = input("Your database username: ")
+	# raise error if user leave empty
+	if bool(user) != True:
+		raise ValueError("You must provide MySQL database username!")
+	# ask for database user password
+	print("Password of the database user")
+	passwd = getpass(prompt="Input is hidden so just type and press Enter: ")
+	# do not raise ValueError in case the user doesn't have password
+	db = input("The database name: ")
+	# raise ValueError if user doesn't provide
+	if bool(db) != True:
+		raise ValueError("You must provide Database name!")
+	
+	# assign values into a mysql dict
+	mysql_info = dict(
+		host=host,
+		port=port,
+		user=user,
+		passwd=passwd,
+		db=db
+	)
+	insert(mysql_info)
+	
+
+"""
+function start
+
+Show the required information about the test
+and call prompt_mysql() after user pressed Enter
+"""
+def start():
+	print("Before we starting this test, we information about your MySQL Server and the database information.")
+	print("We will write a post first, and read it, then delete finally")
+	input("Press Enter if you are ready, otherwise press CTRL+C to exit.")
+	prompt_mysql()
+
+
+# run the startup function
+start()
