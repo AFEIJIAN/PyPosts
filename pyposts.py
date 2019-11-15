@@ -1061,7 +1061,7 @@ class PostManager:
 		return 1
 
 
-"""
+	"""
 	method RemovePostById
 
 	Remove the specific post referred by Post ID or String ID provided
