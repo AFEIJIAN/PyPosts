@@ -997,6 +997,102 @@ class PostManager:
 		# return 1 upon completion
 		return 1
 
+
+"""
+	method RemovePostById
+
+	Remove the specific post referred by Post ID or String ID provided
+
+	id = Post ID or String ID, in int if Post ID, or in string if String ID
+	use_str = Use String ID for post reference, set True if yes, otherwise set False,
+				default is False
+
+	If no error occurs, 1 will be returned
+	"""
+	def RemovePostById(self, id, use_str=False):
+		# data type check
+		# raise error if invalid data type is found
+		if use_str:
+			if isinstance(id, str) != True:
+				raise TypeError("Post String ID must be a string.")
+		else:
+			if isinstance(id, int) != True:
+				raise TypeError("Post ID must be an integer.")
+
+		# create a cursor
+		cursor = self.mysql_conn.cursor(buffered=True)
+
+		# execute query
+		# check if String ID is used for post reference
+		if use_str:
+			cursor.execute("DELETE FROM posts WHERE str_id='{}'".format(id))
+		
+		else:
+			cursor.execute("DELETE FROM posts WHERE id={}".format(id))
+		
+		# commit removed rows
+		self.mysql_conn.commit()
+
+		# close the cursor
+		cursor.close()
+
+		# return 1 upon completion
+		return 1
+
+
+
+	"""
+	method RemoveBulkPostById
+
+	Remove Bulk amount of posts referred by Post ID or String ID
+
+	ids = A List of Post ID or String ID, each of it are in int if Post ID or in string if String ID,
+			Note: All IDs must be the same type, mixing of Post IDs and String IDs is not allowed
+
+	use_str = Use String ID for posts reference, set True if yes, otherwise set False,
+				default is False
+	"""
+	def RemoveBulkPostById(self, ids, use_str=False):
+		# datatype check
+		# raise TypeError if invalid data type is found
+		if isinstance(ids, list) != True:
+			raise TypeError("IDs must be a list.")
+
+		# when ids is a list, check data type for each element
+		else:
+			if use_str:
+				for e in ids:
+					if isinstance(e, str) != True:
+						raise TypeError("All Post String ID inside the list must be a string.")
+
+			else:
+				for e in ids:
+					if isinstance(e, int) != True:
+						raise TypeError("All Post ID inside the list must be an integer.")
+		
+		# create a cursor
+		cursor = self.mysql_conn.cursor()
+
+		# execute query
+		# check if String IDs are used for posts reference
+		if use_str:
+			for e in ids:
+				cursor.execute("DELETE FROM posts WHERE str_id='{}'".format(e))
+				# commit after each query execution
+				self.mysql_conn.commit()
+			
+		else:
+			for e in ids:
+				cursor.execute("DELETE FROM posts WHERE id={}".format(e))
+				# commit after each query execution
+				self.mysql_conn.commit()
+		
+		# close the cursor
+		cursor.close()
+
+		# return 1 upon completion
+		return 1
+
 	
 
 
@@ -1041,6 +1137,8 @@ class PostManager:
 				# close the cursor first to clear buffer
 				cursor.close()
 				return None
+
+
 
 	"""
 	Object Constructor, will be called when object is being built
