@@ -146,7 +146,7 @@ def read(pm, pid):
 		
 		# store posted_date for post reading
 		if types == "posted_date":
-			posted_date = result
+			posted_date = post
 		
 
 	print("Using Post String ID for reference...\n")
