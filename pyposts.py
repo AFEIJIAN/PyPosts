@@ -203,7 +203,7 @@ class PostManager:
 			# last modified date
 			# check if last_modified date is available
 			# we use "1000-01-01" as representation of NULL in MySQL
-			if bool(result[4]) != True or result[4] != None or result[4] != dt(1000,1,1):
+			if result[4] != None and result[4] != dt(1000, 1, 1, 0, 0):
 				# if yes, convert it into string and replace microsecond with 0
 				post['last_modified'] = str(result[4].replace(microsecond=0))
 			
@@ -308,7 +308,7 @@ class PostManager:
 
 					# check if last_modified date is available or not
 					# we use 1000-01-01 as representation of NULL in MySQL
-					if bool(result[loop][5]) != False or result[loop][5] != None or result[loop][5] != dt(1000,1,1):
+					if result[loop][5] != None and result[loop][5] != dt(1000, 1, 1, 0, 0):
 						# if yes, just replace it's microsecond with 0 and
 						# convert it into string
 						cur_post['last_modified'] = str(result[loop][5].replace(microsecond=0))
@@ -366,7 +366,7 @@ class PostManager:
 					# post's last modified date
 					# check if last_modified date is available
 					# we use 1000-01-01 as representation of NULL in MySQL
-					if bool(x[5]) != False or x[5] != None or x[5] != dt(1000,1,1):
+					if x[5] != None and x[5] != dt(1000, 1, 1, 0, 0):
 						# if yes, just replace it's microsecond with 0 and
 						# convert it into string
 						cur_post['last_modified'] = str(x[5].replace(microsecond=0))
