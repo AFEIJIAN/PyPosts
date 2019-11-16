@@ -69,29 +69,33 @@ def read(pm, pid):
 		title="A demo post!",
 		content="Hooray! A demo post!"
 	)
-	print("There are 4 API for Post Reading, we only test 3 of it, we will test one by one.")
-	print("Another API will be tested in write_post.py")
+	print("There are 4 API for Post Reading, we only test 3 of it, we will test one by one.\n")
+	print("Another API will be tested in write_post.py\n")
 	sleep(1)
-	print("Testing 1 of 3: GetPostById")
-	print("Using Post ID for reference...")
+	print("Testing 1 of 3: GetPostById\n")
+	sleep(2)
+	print("Using Post ID for reference...\n")
 	# use Post ID for reference
 	post = pm.GetPostById(id=pid, use_str=False, json=False)
 	# verify result
 	result = verify(post, postv)
 	# if no error found, it will bypass statements
 	if result == -1:
-		print("Something error in here, exiting...")
+		print("Something error in here, exiting...\n")
+		exit()
 	
 	# test using String ID
-	print("Using Post String ID for reference...")
+	print("Using Post String ID for reference...\n")
+	sleep(1)
 	post = pm.GetPostById(id="demo_post", use_str=True, json=False)
 	# verify
 	result = verify(post, postv)
 	if result == -1:
 		print("Something error in here, exiting...")
+		exit()
 	
 	# use Post ID for reference but request for JSON string as result
-	print("Using Post ID for reference but acquiring JSON string this time...")
+	print("Using Post ID for reference but acquiring JSON string this time...\n")
 	post = pm.GetPostById(id=pid, use_str=False, json=True)
 	# verify, decode post from JSON into dict first
 	result = verify(
@@ -100,9 +104,10 @@ def read(pm, pid):
 	)
 	if result == -1:
 		print("Something error in here, exiting...")
+		exit()
 	
 	# use Post String ID for reference but request for JSON string as result
-	print("Using Post String ID for reference but acquiring JSON string this time...")
+	print("Using Post String ID for reference but acquiring JSON string this time...\n")
 	post = pm.GetPostById(id="demo_post", use_str=True, json=True)
 	# verify, decode post first
 	result = verify(
@@ -111,52 +116,66 @@ def read(pm, pid):
 	)
 	if result == -1:
 		print("Something error in here, exiting...")
+		exit()
 	
 	# proceeding to second test
 	# types of post information to be acquired
 	test_types = ['title', 'author', 'posted_date', 'content', 'str_id', 'id']
 	print("Testing 2 of 3: GetPostInfoById")
+	sleep(2)
 	for types in test_types:
 		if types == "posted_date":
 			print("posted_date doesn't have value for verification, since it use the datetime when you insert the post.")
-			print("As long as result appear, it's considered as successful.")
+			print("As long as result appear, it's considered as successful.\n")
+			sleep(2)
 		print("Acquiring {} from database...".format(types))
-		print("Using Post ID as reference")
+		sleep(1)
+		print("Using Post ID as reference\n")
+		post = pm.GetPostInfoById(pid, types, use_str=False)
+		# check if current testing types is posted_date or Post ID
 		if types != "posted_date" or types != "id":
-			post = pm.GetPostInfoById(pid, types, use_str=False)
 			result = verify_single(post, postv[types])
 			if result == -1:
 				print("Something error in here, exiting...")
+				exit()
 		
 		if types == "id":
 			if result != pid:
 				print("Something error in here, exiting...")
+				exit()
 		
 		# store posted_date for post reading
 		if types == "posted_date":
 			posted_date = result
 		
 
-	print("Using Post String ID for reference...")
+	print("Using Post String ID for reference...\n")
+	sleep(2)
 	for types in test_types:
-		print("Acquiring {} from database...".format(types))
+		print("Acquiring {} from database...\n".format(types))
+		sleep(1)
+		post = pm.GetPostInfoById("demo_post", types, use_str=True)
 		if types != "posted_date" or types != "id":
-			post = pm.GetPostInfoById("demo_post", types, use_str=True)
 			result = verify_single(post, postv[types])
 			if result == -1:
 				print("Something error in here, exiting...")
+				exit()
 	
 	print("Testing 3 of 3: GetPostByPostedDate")
 	# convert datetime into string first
 	posted_date = dt.strptime(posted_date, "%Y-%m-%d %H:%M:%S")
 	# acquire post, since we only used 1 demo post for testing
 	# therefore amount of post is limited to 1
-	print("Using posted_date acquired before")
+	print("Using posted_date acquired before\n")
 	# testing without json
 	post = pm.GetPostByPostedDate(posted_date, 1, json=False)
 	# verify result
 	result = verify(post, postv)
-	print("Using same posted_date but request JSON String as output this time...")
+	if result == -1:
+		print("Something error in here, exiting...")
+		exit()
+	sleep(2)
+	print("Using same posted_date but request JSON String as output this time...\n")
 	post = pm.GetPostByPostedDate(posted_date, 1, json=True)
 	# verify result, but decode JSON string first
 	result = verify(
@@ -165,6 +184,7 @@ def read(pm, pid):
 	)
 	if result == -1:
 		print("Something error in here, exiting...")
+		exit()
 	
 	print("Testing performed successful! No errors were found! Proceeding to demo post removal...")
 
