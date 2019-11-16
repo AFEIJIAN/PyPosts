@@ -155,9 +155,14 @@ def read(pm, pid):
 		print("Acquiring {} from database...\n".format(types))
 		sleep(1)
 		post = pm.GetPostInfoById("demo_post", types, use_str=True)
-		if types != "posted_date" or types != "id":
+		if types != "posted_date" and types != "id":
 			result = verify_single(post, postv[types])
 			if result == -1:
+				print("Something error in here, exiting...")
+				exit()
+		
+		if types == "id":
+			if post != pid:
 				print("Something error in here, exiting...")
 				exit()
 	
