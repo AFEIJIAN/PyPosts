@@ -185,14 +185,14 @@ def read(pm, pid):
 	# verify result, but decode JSON string first
 	post = JSONDecoder().decode(post)
 	# since Received post contains nested dict, we need to loop over them
-		for key in post.keys():
-			result = verify(
-				post[key],
-				postv
-			)
-			if result == -1:
-				print("Something error in here, exiting...")
-				exit()
+	for key in post.keys():
+		result = verify(
+			post[key],
+			postv
+		)
+		if result == -1:
+			print("Something error in here, exiting...")
+			exit()
 	
 	print("Testing performed successful! No errors were found! Proceeding to demo post removal...")
 
