@@ -616,16 +616,23 @@ class PostManager:
 		cursor.execute("SELECT id FROM posts")
 		result = cursor.fetchall()
 
-		# accquire all ids and add it to a list
-		ids = list()
-		for x in result:
-			ids.append(x[0])
-		
-		# sort the list so the numbers become ascendingly arranged
-		ids.sort()
+		# check if post id is available, if not we will assign post id with 1
+		if bool(result):
+			# if result found, means post ID is available
+			# acquire all ids and add it to a list
+			ids = list()
+			for x in result:
+				ids.append(x[0])
+			
+			# sort the list so the numbers become ascendingly arranged
+			ids.sort()
 
-		# calculate and assign post id
-		post_id = ids[-1]+1
+			# calculate and assign post id
+			post_id = ids[-1]+1
+		
+		else:
+			# if not, we will give 1 as Post ID
+			post_id = 1
 
 		# execute query
 		cursor.execute("INSERT INTO posts (id, str_id, author, title, posted_date, last_modified, modified, content) VALUES ('{}','{}','{}','{}','{}','{}','{}','{}')".format(
@@ -707,18 +714,25 @@ class PostManager:
 		# fetch all result
 		result = cursor.fetchall()
 
-		# create a list to store all ids
-		ids = list()
+		# check if result is available, if not we will assign 1 to the post_id
+		if bool(result):
+			# if result found, means post_id is available
+			# create a list to store all ids
+			ids = list()
 
-		# add all ids into the list
-		for x in result:
-			ids.append(x)
+			# add all ids into the list
+			for x in result:
+				ids.append(x)
 
-		# sort all the list so that the ids arranged ascendingly
-		ids.sort()
+			# sort all the list so that the ids arranged ascendingly
+			ids.sort()
 
-		# calculate and assign post id
-		post_id = ids[-1]+1
+			# calculate and assign post id
+			post_id = ids[-1]+1
+		
+		else:
+			# if not, we will give 1 as Post ID
+			post_id = 1
 
 		# now insert post into defined MySQL database
 		cursor.execute("INSERT INTO posts (id, str_id, author, title, posted_date, last_modified, modified, content) VALUES ('{}','{}','{}','{}','{}','{}','{}','{}')".format(
