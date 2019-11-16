@@ -182,9 +182,18 @@ def read(pm, pid):
 	sleep(2)
 	print("Using same posted_date but request JSON String as output this time...\n")
 	post = pm.GetPostByPostedDate(posted_date, 1, json=True)
+	# since Received post contains nested dict, we need to loop over them
+	for key in post.keys():
+		result = verify(
+			post[key],
+			postv
+		)
+		if result == -1:
+			print("Something error in here, exiting...")
+			exit()
 	# verify result, but decode JSON string first
 	post = JSONDecoder().decode(post)
-	# since Received post contains nested dict, we need to loop over them
+	# same as above, loop over them
 	for key in post.keys():
 		result = verify(
 			post[key],
