@@ -434,7 +434,7 @@ class PostManager:
 		# replace microsecond to 0 and change date object into string
 		date = str(date.replace(microsecond=0))
 		# execute query
-		cursor.execute("SELECT id,str_id,title,author,content,posted_date,last_modified,modified FROM posts WHERE last_modified <= '{}' AND last_modified != '1000-01-01'".format(date))
+		cursor.execute("SELECT id,str_id,title,author,content,posted_date,last_modified,modified FROM posts WHERE last_modified <= '{}' AND last_modified != '1000-01-01 00:00:00'".format(date))
 
 		# fetch all result
 		result = cursor.fetchall()
