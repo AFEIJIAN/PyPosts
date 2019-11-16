@@ -133,14 +133,14 @@ def read(pm, pid):
 		print("Using Post ID as reference\n")
 		post = pm.GetPostInfoById(pid, types, use_str=False)
 		# check if current testing types is posted_date or Post ID
-		if types != "posted_date" or types != "id":
+		if types != "posted_date" and types != "id":
 			result = verify_single(post, postv[types])
 			if result == -1:
 				print("Something error in here, exiting...")
 				exit()
 		
 		if types == "id":
-			if result != pid:
+			if post != pid:
 				print("Something error in here, exiting...")
 				exit()
 		
