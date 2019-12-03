@@ -253,18 +253,18 @@ def write_post(pm):
 
 	# delete all post by using RemovePostById
 	result = pm.RemovePostById(id="modified_post", use_str=True)
-		# check if result is available
-		# if bool() return True means value is available
-		if bool(result):
-			# check if result contain 1
-			# if yes, means removal success
-			if result == 1:
-				print("Post Removed!\n")
+	# check if result is available
+	# if bool() return True means value is available
+	if bool(result):
+		# check if result contain 1
+		# if yes, means removal success
+		if result == 1:
+			print("Post Removed!\n")
 
-		# otherwise, there must be an error...
-		else:
-			print("Error occured during post removal! Exiting...")
-			exit()
+	# otherwise, there must be an error...
+	else:
+		print("Error occured during post removal! Exiting...")
+		exit()
 		
 	
 	print("All Post write testing completed! Proceeding to Post Update Test...\n")
