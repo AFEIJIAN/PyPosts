@@ -252,7 +252,7 @@ def write_post(pm):
 	# if code reach here, means test success
 
 	# delete all post by using RemovePostById
-		result = pm.RemovePostById(id="modified_post", use_str=True)
+	result = pm.RemovePostById(id="modified_post", use_str=True)
 		# check if result is available
 		# if bool() return True means value is available
 		if bool(result):
