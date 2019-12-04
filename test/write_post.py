@@ -221,10 +221,10 @@ def write_post(pm):
 	# testing method AddPostByJSON
 	print("Testing method AddPostByJSON... hope we will receive post ID from API again!\n")
 	post = """
-	{'str_id':'demo_post',
-	'author':1,
-	'title':'A demo post!',
-	'content':'Welcome to my demo post! :D'}
+	{"str_id":"demo_post",
+	"author":1,
+	"title":"A demo post!",
+	"content":"Welcome to my demo post! :D"}
 	"""
 	pid = pm.AddPostByJSON(post)
 

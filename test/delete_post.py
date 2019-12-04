@@ -99,10 +99,10 @@ def RunTest(pm):
 	# RemovePostById
 	post = """
 	{
-		'str_id':'demo_post',
-		'title':'A Demo Post',
-		'content':'Welcome to my demo post!',
-		'author':1
+		"str_id":"demo_post",
+		"title":"A Demo Post",
+		"content":"Welcome to my demo post!",
+		"author":1
 	}
 	"""
 
@@ -146,34 +146,34 @@ def RunTest(pm):
 	posts = [
 		"""
 	{
-		'str_id':'demo_post_1',
-		'title':'A Demo Post',
-		'content':'Welcome to my demo post!',
-		'author':1
+		"str_id":"demo_post_1",
+		"title":"A Demo Post",
+		"content":"Welcome to my demo post!",
+		"author":1
 	}
 	""",
 	"""
 	{
-		'str_id':'demo_post_2',
-		'title':'A Demo Post (2)',
-		'content':'Welcome to my demo post!',
-		'author':1
+		"str_id":"demo_post_2",
+		"title":"A Demo Post (2)",
+		"content":"Welcome to my demo post!",
+		"author":1
 	}
 	""",
 	"""
 	{
-		'str_id':'demo_post_3',
-		'title':'A Demo Post (3)',
-		'content':'Welcome to my demo post!',
-		'author':1
+		"str_id":"demo_post_3",
+		"title":"A Demo Post (3)",
+		"content":"Welcome to my demo post!",
+		"author":1
 	}
 	""",
 	"""
 	{
-		'str_id':'demo_post_4',
-		'title':'A Demo Post (4)',
-		'content':'Welcome to my demo post!',
-		'author':1
+		"str_id":"demo_post_4",
+		"title":"A Demo Post (4)",
+		"content":"Welcome to my demo post!",
+		"author":1
 	}
 	"""
 	]
@@ -212,7 +212,7 @@ def RunTest(pm):
 			print("Error occured while adding demo post {}! Exiting...\n".format(loop))
 			exit()
 
-	# list off a demo post String IDs
+	# list of a demo post String IDs
 	pids = ["demo_post_1", "demo_post_2", "demo_post_3", "demo_post_4"]
 	
 	# call rmPost again to test
