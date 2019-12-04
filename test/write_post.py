@@ -223,7 +223,7 @@ def write_post(pm):
 	print("Testing method AddPostByJSON... hope we will receive post ID from API again!\n")
 	post = """
 	{"str_id":"demo_post",
-	"author":1,
+	"author_id":1,
 	"title":"A demo post!",
 	"content":"Welcome to my demo post! :D"}
 	"""
