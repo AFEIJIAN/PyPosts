@@ -898,11 +898,7 @@ class PostManager:
 				raise TypeError("Post String ID must be a string.")
 		else:
 			if isinstance(id, int) != True:
-				try:
-					id = int(id)
-				
-				except ValueError:
-					raise TypeError("Post ID must be an integer.")
+				raise TypeError("Post ID must be an integer.")
 					
 		
 		if isinstance(author_id, int) != True:
@@ -1006,6 +1002,9 @@ class PostManager:
 		"author_id": 1
 	}
 
+	REMEMBER to use DOUBLE QUOTES to enclosed property names, otherwise
+	error will be raised
+
 	To summarize,
 
 	It will be an object in JavaScript,
@@ -1031,7 +1030,7 @@ class PostManager:
 			if isinstance(post['id'], str) != True:
 				raise TypeError("Post String ID must be a string.")
 		else:
-			if isinstance(post['id'], str) != True:
+			if isinstance(post['id'], int) != True:
 				raise TypeError("Post ID must be an integer.")
 
 		if isinstance(post['str_id'], str) != True:
