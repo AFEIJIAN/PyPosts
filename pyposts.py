@@ -685,6 +685,9 @@ class PostManager:
 		"author_id": 1
 	}
 
+	REMEMBER to use DOUBLE QUOTES to enclosed property names, otherwise
+	JSONDecoderError will be raised by JSON decoder
+
 	To summarize,
 	
 	It will be an object in JavaScript,
@@ -840,14 +843,14 @@ class PostManager:
 		# when str_id is updated, we will use 'value' instead of 'id',
 		# this is because 'id' is the old value used for reference just now
 		if Type == "str_id":
-			cursor.execute("UPDATE posts SET modified=1 AND last_modified='{}' WHERE str_id='{}'".format(
+			cursor.execute("UPDATE posts SET modified=1, last_modified='{}' WHERE str_id='{}'".format(
 				str(dt.now().replace(microsecond=0)),
 				value
 			))
 		
 		else:
 			# otherwise, still using the post's id for reference
-			cursor.execute("UPDATE posts SET modified=1 AND last_modified='{}' WHERE id={}".format(
+			cursor.execute("UPDATE posts SET modified=1, last_modified='{}' WHERE id={}".format(
 				str(dt.now().replace(microsecond=0)),
 				id
 			))
@@ -919,7 +922,7 @@ class PostManager:
 		# check if string ID is used for post reference
 		if use_str:
 			# execute query with str_id as reference
-			cursor.execute("UPDATE posts SET author={} AND title='{}' AND content='{}' AND str_id='{}' WHERE str_id='{}'".format(
+			cursor.execute("UPDATE posts SET author={}, title='{}', content='{}', str_id='{}' WHERE str_id='{}'".format(
 				author_id,
 				title,
 				content,
@@ -927,7 +930,7 @@ class PostManager:
 				id
 			))
 		else:
-			cursor.execute("UPDATE posts SET author={} AND title='{}' AND content='{}' AND str_id='{}' WHERE id={}".format(
+			cursor.execute("UPDATE posts SET author={}, title='{}', content='{}', str_id='{}' WHERE id={}".format(
 				author_id,
 				title,
 				content,
@@ -941,12 +944,12 @@ class PostManager:
 		# now update the post with last_modified date and modified attribute
 		if use_str:
 			# in case user changed their String ID, we will use it for post reference
-			cursor.execute("UPDATE posts SET modified=1 AND last_modified='{}' WHERE str_id='{}'".format(
+			cursor.execute("UPDATE posts SET modified=1, last_modified='{}' WHERE str_id='{}'".format(
 				str(dt.now().replace(microsecond=0)),
 				str_id
 			))
 		else:
-			cursor.execute("UPDATE posts SET modified=1 AND last_modified='{}' WHERE id={}".format(
+			cursor.execute("UPDATE posts SET modified=1, last_modified='{}' WHERE id={}".format(
 				str(dt.now().replace(microsecond=0)),
 				id
 			))
@@ -1003,7 +1006,7 @@ class PostManager:
 	}
 
 	REMEMBER to use DOUBLE QUOTES to enclosed property names, otherwise
-	error will be raised
+	JSONDecoderError will be raised by JSON decoder
 
 	To summarize,
 
@@ -1048,7 +1051,7 @@ class PostManager:
 		# execute query
 		# check if user want String ID used for post reference
 		if use_str:
-			cursor.execute("UPDATE posts SET str_id='{}' AND title='{}' AND content='{}' AND author={} WHERE str_id='{}'".format(
+			cursor.execute("UPDATE posts SET str_id='{}', title='{}', content='{}', author={} WHERE str_id='{}'".format(
 				post['str_id'],
 				post['title'],
 				post['content'],
@@ -1057,7 +1060,7 @@ class PostManager:
 			))
 		
 		else:
-			cursor.execute("UPDATE posts SET str_id='{}' AND title='{}' AND content='{}' AND author={} WHERE id={}".format(
+			cursor.execute("UPDATE posts SET str_id='{}', title='{}', content='{}', author={} WHERE id={}".format(
 				post['str_id'],
 				post['title'],
 				post['content'],
@@ -1072,13 +1075,13 @@ class PostManager:
 		# check if user want String ID used for post reference
 		if use_str:
 			# in case user changed the post String ID, we will use latest value
-			cursor.execute("UPDATE posts SET modified=1 AND last_modified='{}' WHERE str_id='{}'".format(
+			cursor.execute("UPDATE posts SET modified=1, last_modified='{}' WHERE str_id='{}'".format(
 				str(dt.now().replace(microsecond=0)),
 				post['str_id']
 			))
 		
 		else:
-			cursor.execute("UPDATE posts SET modified=1 AND last_modified='{}' WHERE id={}".format(
+			cursor.execute("UPDATE posts SET modified=1, last_modified='{}' WHERE id={}".format(
 				str(dt.now().replace(microsecond=0)),
 				post['id']
 			))
