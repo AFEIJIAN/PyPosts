@@ -900,7 +900,7 @@ class PostManager:
 			if isinstance(id, int) != True:
 				raise TypeError("Post ID must be an integer.")
 		
-		if isinstance(author, int) != True:
+		if isinstance(author_id, int) != True:
 			raise TypeError("Post Author ID must be an integer.")
 		
 		if isinstance(title, str) != True:

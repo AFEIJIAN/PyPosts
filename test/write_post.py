@@ -64,11 +64,11 @@ def update_post(pm, post):
 			# declared a JSON string
 			post = """
 			{
-			'id':{},
-			'str_id':'modified_post',
-			'author':1,
-			'title':'A modified post!',
-			'content':'Welcome to my demo post! :D'
+			"id":{},
+			"str_id":"modified_post",
+			"author_id":1,
+			"title":"A modified post!",
+			"content":"Welcome to my demo post! :D"
 			}
 			""".format(pid)
 			# change post content into "A Modified Post"
@@ -132,11 +132,11 @@ def update_post(pm, post):
 			# declared a JSON string
 			post = """
 			{
-			'id':'demo_post',
-			'str_id':'modified_post',
-			'author':1,
-			'title':'A modified post!',
-			'content':'Welcome to my demo post! :D'
+			"id":"demo_post",
+			"str_id":"modified_post",
+			"author_id":1,
+			"titl":"A modified post!",
+			"content":"Welcome to my demo post! :D"
 			}
 			"""
 			# change post content into "A Modified Post"
