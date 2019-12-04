@@ -817,10 +817,13 @@ class PostManager:
 			if isinstance(id, int) == False:
 				raise TypeError("Post ID must be an integer.")
 		
+		# create a bufferred cursor
+		cursor = self.mysql_conn.cursor()
+		
 		# execute query to update post info
 		# if using string ID as reference
 		if use_str:
-			cursor.execute("UPDATE posts SET '{}'='{}' WHERE str_id='{}'".format(
+			cursor.execute("UPDATE posts SET {}='{}' WHERE str_id='{}'".format(
 				Type,
 				value,
 				id
@@ -828,7 +831,7 @@ class PostManager:
 		
 		# if using post ID as reference
 		else:
-			cursor.execute("UPDATE posts SET '{}'='{}' WHERE id='{}'".format(
+			cursor.execute("UPDATE posts SET {}='{}' WHERE id='{}'".format(
 				Type,
 				value,
 				id

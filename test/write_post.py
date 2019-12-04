@@ -124,6 +124,7 @@ def update_post(pm, post):
 				author_id=1,
 				title="A Modified Post",
 				str_id="modified_post",
+				content="This is a modified post!"
 				use_str=True
 				)
 		
@@ -135,7 +136,7 @@ def update_post(pm, post):
 			"id":"demo_post",
 			"str_id":"modified_post",
 			"author_id":1,
-			"titl":"A modified post!",
+			"title":"A modified post!",
 			"content":"Welcome to my demo post! :D"
 			}
 			"""
