@@ -63,13 +63,13 @@ def update_post(pm, post):
 			# update the post using provided JSON string
 			# declared a JSON string
 			post = """
-			{
+			{{
 			"id":{},
 			"str_id":"modified_post",
 			"author_id":1,
 			"title":"A modified post!",
 			"content":"Welcome to my demo post! :D"
-			}
+			}}
 			""".format(pid)
 			# change post content into "A Modified Post"
 			result = pm.UpdatePostByJSON(post, use_str=False)
