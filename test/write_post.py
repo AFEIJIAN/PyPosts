@@ -39,7 +39,7 @@ def update_post(pm, post):
 		# add post first
 		result = pm.AddPostByJSON(post)
 		# check if post added successfully
-		if result != 1:
+		if not result:
 			# if result not 1, means error occured, exit
 			print("Cannot add post! Exiting...")
 			exit()
@@ -107,7 +107,7 @@ def update_post(pm, post):
 		# add post first
 		result = pm.AddPostByJSON(post)
 		# check if post added successfully
-		if result != 1:
+		if not result:
 			# if result not 1, means error occured, exit
 			print("Cannot add post! Exiting...")
 			exit()

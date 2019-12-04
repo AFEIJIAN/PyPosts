@@ -722,7 +722,7 @@ class PostManager:
 
 			# add all ids into the list
 			for x in result:
-				ids.append(x)
+				ids.append(x[0])
 
 			# sort all the list so that the ids arranged ascendingly
 			ids.sort()
