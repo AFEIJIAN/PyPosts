@@ -102,7 +102,7 @@ def RunTest(pm):
 		"str_id":"demo_post",
 		"title":"A Demo Post",
 		"content":"Welcome to my demo post!",
-		"author":1
+		"author_id":1
 	}
 	"""
 
@@ -149,7 +149,7 @@ def RunTest(pm):
 		"str_id":"demo_post_1",
 		"title":"A Demo Post",
 		"content":"Welcome to my demo post!",
-		"author":1
+		"author_id":1
 	}
 	""",
 	"""
@@ -157,7 +157,7 @@ def RunTest(pm):
 		"str_id":"demo_post_2",
 		"title":"A Demo Post (2)",
 		"content":"Welcome to my demo post!",
-		"author":1
+		"author_id":1
 	}
 	""",
 	"""
@@ -165,7 +165,7 @@ def RunTest(pm):
 		"str_id":"demo_post_3",
 		"title":"A Demo Post (3)",
 		"content":"Welcome to my demo post!",
-		"author":1
+		"author_id":1
 	}
 	""",
 	"""
@@ -173,7 +173,7 @@ def RunTest(pm):
 		"str_id":"demo_post_4",
 		"title":"A Demo Post (4)",
 		"content":"Welcome to my demo post!",
-		"author":1
+		"author_id":1
 	}
 	"""
 	]
