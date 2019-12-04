@@ -6,39 +6,10 @@
 import mysql.connector as sql
 # Encoder and Decoder from JSON to process post content
 from json import JSONEncoder,JSONDecoder
-# for path modification
-from os.path import dirname,abspath
-# for error output
+# for error output and exit function
 from sys import exc_info,exit
 # datetime object, used for post writing and data type verification
 from datetime import datetime as dt
-
-# object panel aren't necessary right now, commented
-"""
-# consist web management panel
-class panel:
-	# constructor
-	def __init__(self, webapp_port, mysql_host, mysql_port=3306, mysql_user, mysql_passwd, mysql_db, log_file_obj):
-		self.mysql_host = mysql_host
-		self.mysql_port = int(mysql_port)
-		self.mysql_user = mysql_user
-		self.mysql_passwd = mysql_passwd
-		self.mysql_db = mysql_db
-		self.webapp_port = int(webapp_port)
-		conf = Configurator()
-		# index = login page
-		conf.add_route('index',"/")
-		conf.add_view(self.index, route_name='index')
-		# panel = web panel, web app
-		conf.add_route('panel','/panel')
-		conf.add_view(self.panel, route_name='panel')
-		self.app = conf.make_wsgi_app()
-	
-	# listening function
-	def run(self):
-		self.app = make_server('127.0.0.1', self.webapp_port, self.app)
-		self.app.serve_forever()
-"""
 
 
 """
