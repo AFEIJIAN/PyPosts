@@ -113,7 +113,7 @@ def RunTest(pm):
 	# check if pid is received
 	if bool(pid):
 		# if yes, call rmPost to test
-		result = rmPost(pm, pid, array=False, use_str=False)
+		result = rmPost(pm, pid, array=False, str_id=False)
 		# check if result is not 1
 		if result != 1:
 			# if result is not 1, means there's an error,
@@ -130,7 +130,7 @@ def RunTest(pm):
 	# check if pid is received
 	if bool(pid):
 		# if yes, call rmPost to test
-		result = rmPost(pm, "demo_post", array=False, use_str=True)
+		result = rmPost(pm, "demo_post", array=False, str_id=True)
 		# check if result is not 1
 		if result != 1:
 			# if result is not 1, means there's an error
@@ -194,7 +194,7 @@ def RunTest(pm):
 	
 	# call rmPost to test
 	# using Post IDs as reference
-	result = rmPost(pm, pids, array=True, use_str=False)
+	result = rmPost(pm, pids, array=True, str_id=False)
 	# check if result is not 1
 	if result != 1:
 		# if not 1, means there's an error, exit
@@ -217,7 +217,7 @@ def RunTest(pm):
 	
 	# call rmPost again to test
 	# using String IDs as reference this time
-	result = rmPost(pm, pids, array=True, use_str=True)
+	result = rmPost(pm, pids, array=True, str_id=True)
 	# check if result is not 1
 	if result != 1:
 		# if not 1, means there's an error, exit
