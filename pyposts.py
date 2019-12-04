@@ -741,7 +741,7 @@ class PostManager:
 		cursor.execute("INSERT INTO posts (id, str_id, author, title, posted_date, last_modified, modified, content) VALUES ('{}','{}','{}','{}','{}','{}','{}','{}')".format(
 			post_id,
 			post['str_id'],
-			post['author'],
+			post['author_id'],
 			post['title'],
 			# use current date and time with microsecond changed to 0
 			str(dt.now().replace(microsecond=0)),
