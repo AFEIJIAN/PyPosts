@@ -37,9 +37,9 @@ def update_post(pm, post):
 	# use loops for easier development
 	for loop in test_list:
 		# add post first
-		result = pm.AddPostByJSON(post)
+		pid = pm.AddPostByJSON(post)
 		# check if post added successfully
-		if not result:
+		if not pid:
 			# if result not 1, means error occured, exit
 			print("Cannot add post! Exiting...")
 			exit()
