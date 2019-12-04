@@ -55,6 +55,7 @@ def update_post(pm, post):
 				author_id=1,
 				title="A Modified Post",
 				str_id="modified_post",
+				content="This is a modified post!",
 				use_str=False
 				)
 		
